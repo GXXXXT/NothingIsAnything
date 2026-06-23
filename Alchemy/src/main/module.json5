@@ -1,0 +1,9 @@
+{
+  "module": {
+    "name": "Alchemy",
+    "type": "har",
+    "deviceTypes": [
+      "default"
+    ]
+  }
+}
