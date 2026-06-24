@@ -1,0 +1,30 @@
+.gitignore
+  s_b12689ea387354::t_c496c90f77f32c 8-10
+Alchemy/src/main/ets/interface/AlchemicalRod.ets
+  s_b12689ea387354::t_d5c1a3f6adbf10 3
+Alchemy/src/main/ets/interface/AlchemicalFurnace.ets
+  s_b12689ea387354::t_c43fa83929cb5e 3
+Alchemy/Index.ets
+  s_b12689ea387354::t_8ee7f8a456dd45 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.25.116",
+  "base_commit_sha": "216ccf1b8a777e4b001f85e5e60635ffa5d6196c",
+  "prompts": {},
+  "humans": {
+    "h_22e274a52827b7": {
+      "author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  },
+  "sessions": {
+    "s_b12689ea387354": {
+      "agent_id": {
+        "tool": "codegenie-deveco",
+        "id": "1781661849562",
+        "model": "unknown"
+      },
+      "human_author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  }
+}
