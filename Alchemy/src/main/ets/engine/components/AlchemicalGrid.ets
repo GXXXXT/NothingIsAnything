@@ -13,22 +13,19 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalComponent } from "./AlchemicalComponent";
+import { typeNode } from "@ohos.arkui.node";
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod({
-    uiContext: this.getUIContext()
-  });
+/**
+ * 炼金网格 — 封装 ArkUI Grid 网格容器。
+ *
+ * 子节点按行列网格排列，适用于宫格布局等场景。
+ */
+export class AlchemicalGrid extends AlchemicalComponent {
 
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
+  constructor(uiContext: UIContext) {
+    super(uiContext);
+    let grid: typeNode.Grid = typeNode.createNode(this.uiContext, 'Grid');
+    this.node = grid;
   }
 }

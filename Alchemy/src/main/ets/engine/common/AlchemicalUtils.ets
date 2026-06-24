@@ -13,22 +13,9 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalPotion } from "../../interface/Alchemy";
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod({
-    uiContext: this.getUIContext()
-  });
-
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
-  }
+export function parseMessage(message: string): AlchemicalPotion[] {
+  let potions: AlchemicalPotion[] = JSON.parse(message);
+  return potions;
 }

@@ -13,22 +13,28 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalNodeController } from './AlchemicalNodeController'
+import { AlchemicalRodImpl } from './AlchemicalRod'
 
-@Entry
 @Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod({
-    uiContext: this.getUIContext()
-  });
+export struct AlchemicalFurnaceImpl {
+  @Require alchemicalRod: AlchemicalRodImpl | undefined = undefined;;
+
+  private alchemicalController: AlchemicalNodeController | undefined;
+
+  aboutToAppear(): void {
+    if (this.alchemicalRod) {
+      this.alchemicalController = new AlchemicalNodeController(this.alchemicalRod.uiContext);
+    }
+  }
 
   build() {
     Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
+      NodeContainer(this.alchemicalController)
+        .width('100%')
+        .height('100%');
     }
+    .width('100%')
+    .height('100%');
   }
 }

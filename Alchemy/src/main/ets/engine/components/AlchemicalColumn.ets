@@ -13,22 +13,14 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalComponent } from "./AlchemicalComponent";
+import { typeNode } from "@ohos.arkui.node";
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod({
-    uiContext: this.getUIContext()
-  });
+export class AlchemicalColumn extends AlchemicalComponent {
 
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
+  constructor(uiContext: UIContext) {
+    super(uiContext);
+    let column: typeNode.Column = typeNode.createNode(this.uiContext, 'Column');
+    this.node = column;
   }
 }
