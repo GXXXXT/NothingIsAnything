@@ -13,20 +13,16 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalFurnaceImpl } from '../engine/core/AlchemicalFurnace'
+import { AlchemicalRod } from './AlchemicalRod.ets'
 
-@Entry
 @Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod(this.getUIContext());
+export struct AlchemicalFurnace {
+  alchemicalRod: AlchemicalRod | undefined;
 
   build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
+    AlchemicalFurnaceImpl({ alchemicalRod: this.alchemicalRod })
+      .width('100%')
+      .height('100%')
   }
 }

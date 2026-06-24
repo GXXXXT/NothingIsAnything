@@ -13,20 +13,17 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalRod } from '../../interface/AlchemicalRod'
+import { parseMessage } from '../common/AlchemicalUtils';
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod(this.getUIContext());
+export class AlchemicalRodImpl implements AlchemicalRod {
+  uiContext: UIContext;
 
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
+  constructor(uiContext: UIContext) {
+    this.uiContext = uiContext;
+  }
+
+  onReceive(message: string): void {
+    parseMessage(message);
   }
 }

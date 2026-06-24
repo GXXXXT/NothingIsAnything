@@ -13,20 +13,18 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalRodImpl } from '../engine/core/AlchemicalRod'
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod(this.getUIContext());
+export interface AlchemicalRodOptions {
+  uiContext: UIContext
+}
 
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
+export interface AlchemicalRod {
+  onReceive(message: string): void;
+}
+
+export class AlchemicalRodCreator {
+  static forgeAlchemicalRod(options: AlchemicalRodOptions): AlchemicalRod {
+    return new AlchemicalRodImpl(options.uiContext);
   }
 }

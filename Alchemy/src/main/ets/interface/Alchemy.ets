@@ -13,20 +13,12 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+export enum AlchemicalPotionType {
+  UPDATE_DATA = 0,
+  UPDATE_COMPONENT = 1
+}
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod(this.getUIContext());
-
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
-  }
+export interface AlchemicalPotion {
+  type: AlchemicalPotionType;
+  value: object;
 }
