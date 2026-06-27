@@ -1,0 +1,52 @@
+Alchemy/src/main/ets/interface/AlchemicalFurnace.ets
+  h_22e274a52827b7 15,18-19,22-23
+Alchemy/src/main/ets/engine/components/ComponentFactory.ets
+  h_22e274a52827b7 15,18,20,23,25,31
+  s_1a00eedad2f904::t_9273c7ff79c7d0 24,26-30,32-37
+Alchemy/src/main/ets/engine/components/AlchemicalComponent.ets
+  s_1a00eedad2f904::t_eec8d77e9d656f 20-25
+  s_1a00eedad2f904::t_990e0bda9a5ed4 28
+  h_22e274a52827b7 15,17-19,26-27,29,31,33,40,48
+  s_1a00eedad2f904::t_fb5a1c45912a96 30,32,34-39,41-47,49-55
+Alchemy/src/main/ets/engine/core/AlchemicalRod.ets
+  s_1a00eedad2f904::t_0b218afd00f899 30-35
+entry/src/main/ets/pages/Index.ets
+  s_1a00eedad2f904::t_31adb0f174c583 26-27,30-31
+  s_1a00eedad2f904::t_ac6d732c3752f4 25
+Alchemy/src/main/ets/engine/core/AlchemicalNodeController.ets
+  s_1a00eedad2f904::t_ccd2039980f0bd 25,27
+  s_1a00eedad2f904::t_3d858f5d4b586f 31-32
+  s_1a00eedad2f904::t_776ce5da492e07 26
+  h_22e274a52827b7 1-20,28-30,33-34,36,39,42
+  s_1a00eedad2f904::t_6fd328ee9fdb2b 38,40-41,43-60
+  s_1a00eedad2f904::t_0b2d92685d8071 35,37
+  s_1a00eedad2f904::t_9709cbf6b86c74 21-24
+Alchemy/src/main/ets/engine/components/AlchemicalText.ets
+  h_22e274a52827b7 15,18,20-21,23,28
+  s_1a00eedad2f904::t_ecf13f0f40b55c 22,24-27,29-33
+Alchemy/src/main/ets/engine/core/AlchemicalFurnace.ets
+  s_1a00eedad2f904::t_6b51307629f56d 16-17,19-20
+  s_1a00eedad2f904::t_96d39beff8546e 25-26,28-29,31-40
+  h_22e274a52827b7 15,18,21-24,27,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.25.116",
+  "base_commit_sha": "ad62b4670c09f05af38fc5e0c4db374a39b12e03",
+  "prompts": {},
+  "humans": {
+    "h_22e274a52827b7": {
+      "author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  },
+  "sessions": {
+    "s_1a00eedad2f904": {
+      "agent_id": {
+        "tool": "codegenie-deveco",
+        "id": "1782397850440",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
