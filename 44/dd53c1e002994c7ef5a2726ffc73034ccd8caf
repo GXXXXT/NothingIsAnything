@@ -1,0 +1,33 @@
+Alchemy/src/main/ets/engine/core/AlchemicalFurnace.ets
+  s_1a00eedad2f904::t_6b51307629f56d 15-37
+Alchemy/src/main/ets/engine/core/AlchemicalNodeController.ets
+  h_22e274a52827b7 1-50
+Alchemy/src/main/ets/engine/components/AlchemicalComponent.ets
+  h_22e274a52827b7 15,17,21,27,31,37,47,55
+Alchemy/src/main/ets/engine/components/AlchemicalText.ets
+  h_22e274a52827b7 20,22,24,29
+  s_1a00eedad2f904::t_3273d73d10e843 25-28,30-32
+  s_1a00eedad2f904::t_3b0ed89e34f184 23
+  s_1a00eedad2f904::t_fe3ebd24341924 34-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.25.116",
+  "base_commit_sha": "44dd53c1e002994c7ef5a2726ffc73034ccd8caf",
+  "prompts": {},
+  "humans": {
+    "h_22e274a52827b7": {
+      "author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  },
+  "sessions": {
+    "s_1a00eedad2f904": {
+      "agent_id": {
+        "tool": "codegenie-deveco",
+        "id": "1782397850440",
+        "model": "unknown"
+      },
+      "human_author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  }
+}
