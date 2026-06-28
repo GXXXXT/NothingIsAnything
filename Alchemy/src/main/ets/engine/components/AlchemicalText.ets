@@ -26,6 +26,10 @@ export class AlchemicalText extends AlchemicalComponent {
     this.node = text;
   }
 
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalText.json');
+  }
+
   setText(textValue: string): void {
     this.textValue = textValue;
     (this.node as typeNode.Text).initialize(textValue);

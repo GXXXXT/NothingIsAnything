@@ -31,31 +31,60 @@ export class AlchemicalSlider extends AlchemicalComponent {
   constructor(uiContext: UIContext) {
     super(uiContext);
     let slider: typeNode.Slider = typeNode.createNode(this.uiContext, 'Slider');
-    slider.initialize(this.value, this.min, this.max, this.step);
+    slider.initialize({
+      value: this.value,
+      min: this.min,
+      max: this.max,
+      step: this.step
+    })
     this.node = slider;
+  }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalSlider.json');
   }
 
   /** 设置滑块当前值。 */
   setValue(value: number): void {
     this.value = value;
-    (this.node as typeNode.Slider).initialize(this.value, this.min, this.max, this.step);
+    (this.node as typeNode.Slider).initialize({
+      value: this.value,
+      min: this.min,
+      max: this.max,
+      step: this.step
+    });
   }
 
   /** 设置滑块最小值。 */
   setMin(min: number): void {
     this.min = min;
-    (this.node as typeNode.Slider).initialize(this.value, this.min, this.max, this.step);
+    (this.node as typeNode.Slider).initialize({
+      value: this.value,
+      min: this.min,
+      max: this.max,
+      step: this.step
+    })
   }
 
   /** 设置滑块最大值。 */
   setMax(max: number): void {
     this.max = max;
-    (this.node as typeNode.Slider).initialize(this.value, this.min, this.max, this.step);
+    (this.node as typeNode.Slider).initialize({
+      value: this.value,
+      min: this.min,
+      max: this.max,
+      step: this.step
+    })
   }
 
   /** 设置滑块步长。 */
   setStep(step: number): void {
     this.step = step;
-    (this.node as typeNode.Slider).initialize(this.value, this.min, this.max, this.step);
+    (this.node as typeNode.Slider).initialize({
+      value: this.value,
+      min: this.min,
+      max: this.max,
+      step: this.step
+    })
   }
 }

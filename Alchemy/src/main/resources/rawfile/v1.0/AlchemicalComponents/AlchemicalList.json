@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../common.json#/$defs/ComponentId"
+    },
+    "componentType": {
+      "const": "List"
+    },
+    "child": {
+      "type": "object",
+      "description": "The ID lists of the child component(egs. [\"childOne\", \"chileTwo\"]). Do NOT define the child component inline."
+    },
+    "params": {
+      "type": "object",
+      "description": "Scroll and layout properties for the List container."
+    }
+  },
+  "required": [
+    "id",
+    "componentType"
+  ]
+}

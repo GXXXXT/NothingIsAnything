@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../common.json#/$defs/ComponentId"
+    },
+    "componentType": {
+      "const": "Slider"
+    },
+    "child": {
+      "type": "object",
+      "description": "The ID lists of the child component(egs. [\"childOne\", \"chileTwo\"]). Do NOT define the child component inline."
+    },
+    "params": {
+      "value": {
+        "type": "number",
+        "description": "The current value of the slider."
+      },
+      "min": {
+        "type": "number",
+        "description": "The minimum value of the slider."
+      },
+      "max": {
+        "type": "number",
+        "description": "The maximum value of the slider."
+      },
+      "step": {
+        "type": "number",
+        "description": "The step increment of the slider."
+      }
+    }
+  },
+  "required": [
+    "id",
+    "componentType"
+  ]
+}

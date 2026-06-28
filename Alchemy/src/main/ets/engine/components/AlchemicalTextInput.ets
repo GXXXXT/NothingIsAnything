@@ -29,19 +29,32 @@ export class AlchemicalTextInput extends AlchemicalComponent {
   constructor(uiContext: UIContext) {
     super(uiContext);
     let textInput: typeNode.TextInput = typeNode.createNode(this.uiContext, 'TextInput');
-    textInput.initialize(this.placeholder, this.textValue);
+    textInput.initialize({
+      text: this.textValue,
+      placeholder: this.placeholder
+    })
     this.node = textInput;
+  }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalTextInput.json');
   }
 
   /** 设置占位提示文本。 */
   setPlaceholder(placeholder: string): void {
     this.placeholder = placeholder;
-    (this.node as typeNode.TextInput).initialize(this.placeholder, this.textValue);
+    (this.node as typeNode.TextInput).initialize({
+      text: this.textValue,
+      placeholder: this.placeholder
+    })
   }
 
   /** 设置输入框文本内容。 */
   setText(textValue: string): void {
     this.textValue = textValue;
-    (this.node as typeNode.TextInput).initialize(this.placeholder, this.textValue);
+    (this.node as typeNode.TextInput).initialize({
+      text: this.textValue,
+      placeholder: this.placeholder
+    })
   }
 }

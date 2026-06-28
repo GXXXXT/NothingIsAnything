@@ -14,6 +14,7 @@
  */
 
 import { FrameNode } from '@ohos.arkui.node';
+import { util } from '@kit.ArkTS';
 
 /**
  * 炼金组件基类 — 所有可视化组件继承于此。
@@ -25,10 +26,42 @@ export abstract class AlchemicalComponent {
   protected uiContext: UIContext;
   protected node: FrameNode | null = null;
 
-  // protected commonAttribute: Map<string, () => void> =
+  /** 组件的 JSON Schema 规则内容，由 {@link buildRule} 从 rawfile 加载。 */
+  protected rule: string | undefined;
 
   constructor(uiContext: UIContext) {
     this.uiContext = uiContext;
+  }
+
+  /** 子类必须实现，调用 {@link loadRule} 加载对应的规则文件。 */
+  abstract buildRule(): void;
+
+  /**
+   * 从 rawfile 加载 JSON Schema 规则文件。
+   *
+   * @param path 相对于 rawfile 根目录的路径，如 'v1.0/Alchemicalcomponents/AlchemicalButton.json'
+   */
+  protected loadRule(path: string): void {
+    try {
+      let ctx = this.uiContext.getHostContext();
+      if (!ctx) {
+        console.error('[AlchemicalComponent] Failed to get host context');
+        return;
+      }
+      ctx.resourceManager.getRawFileContent(
+        path,
+        (error: BusinessError, value: Uint8Array) => {
+          if (error) {
+            console.error(`[AlchemicalComponent] Failed to load rule "${path}": ${error.message}`);
+            return;
+          }
+          let textDecoder = util.TextDecoder.create('utf-8');
+          this.rule = textDecoder.decodeWithStream(value);
+        }
+      );
+    } catch (e) {
+      console.error(`[AlchemicalComponent] loadRule error: ${JSON.stringify(e)}`);
+    }
   }
 
   /**

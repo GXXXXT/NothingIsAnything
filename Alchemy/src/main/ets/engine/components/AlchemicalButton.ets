@@ -31,9 +31,13 @@ export class AlchemicalButton extends AlchemicalComponent {
     this.node = button;
   }
 
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalButton.json');
+  }
+
   /** 设置按钮文本标签。 */
   setLabel(label: string): void {
     this.label = label;
-    (this.node as typeNode.Button).initialize(label);
+    (this.node as typeNode.Button).initialize(this.label);
   }
 }

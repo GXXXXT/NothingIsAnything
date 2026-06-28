@@ -28,4 +28,8 @@ export class AlchemicalDivider extends AlchemicalComponent {
     let divider: typeNode.Divider = typeNode.createNode(this.uiContext, 'Divider');
     this.node = divider;
   }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalDivider.json');
+  }
 }

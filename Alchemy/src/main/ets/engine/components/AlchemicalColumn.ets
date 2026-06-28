@@ -23,4 +23,8 @@ export class AlchemicalColumn extends AlchemicalComponent {
     let column: typeNode.Column = typeNode.createNode(this.uiContext, 'Column');
     this.node = column;
   }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalColumn.json');
+  }
 }

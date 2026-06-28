@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../common.json#/$defs/ComponentId"
+    },
+    "componentType": {
+      "const": "Image"
+    },
+    "child": {
+      "type": "object",
+      "description": "The ID lists of the child component(egs. [\"childOne\", \"chileTwo\"]). Do NOT define the child component inline."
+    },
+    "params": {
+      "src": {
+        "type": "string",
+        "description": "The image resource path (e.g. '/res/avatar.png')."
+      }
+    }
+  },
+  "required": [
+    "id",
+    "componentType",
+    "params.src"
+  ]
+}

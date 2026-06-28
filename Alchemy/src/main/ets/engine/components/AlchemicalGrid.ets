@@ -28,4 +28,8 @@ export class AlchemicalGrid extends AlchemicalComponent {
     let grid: typeNode.Grid = typeNode.createNode(this.uiContext, 'Grid');
     this.node = grid;
   }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalGrid.json');
+  }
 }

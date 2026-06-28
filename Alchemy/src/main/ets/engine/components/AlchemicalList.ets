@@ -28,4 +28,8 @@ export class AlchemicalList extends AlchemicalComponent {
     let list: typeNode.List = typeNode.createNode(this.uiContext, 'List');
     this.node = list;
   }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalList.json');
+  }
 }

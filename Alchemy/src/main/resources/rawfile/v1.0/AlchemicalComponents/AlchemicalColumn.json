@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../common.json#/$defs/ComponentId"
+    },
+    "componentType": {
+      "const": "Column"
+    },
+    "child": {
+      "type": "object",
+      "description": "The ID lists of the child component(egs. [\"childOne\", \"chileTwo\"]). Do NOT define the child component inline."
+    },
+    "params": {
+      "type": "object",
+      "description": "Layout properties for the Column container."
+    }
+  },
+  "required": [
+    "id",
+    "componentType"
+  ]
+}

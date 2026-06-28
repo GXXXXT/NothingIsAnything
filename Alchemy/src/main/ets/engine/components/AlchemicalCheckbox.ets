@@ -22,18 +22,26 @@ import { typeNode } from "@ohos.arkui.node";
  * 支持设置选中状态，通过 {@link setChecked} 动态切换。
  */
 export class AlchemicalCheckbox extends AlchemicalComponent {
+  private name: string = '';
+  private group: string = '';
   private checked: boolean = false;
 
   constructor(uiContext: UIContext) {
     super(uiContext);
     let checkbox: typeNode.Checkbox = typeNode.createNode(this.uiContext, 'Checkbox');
-    checkbox.initialize(this.checked);
+    checkbox.initialize({ name: this.name, group: this.group })
+      .select(this.checked)
     this.node = checkbox;
+  }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalCheckbox.json');
   }
 
   /** 设置复选框选中状态。 */
   setChecked(checked: boolean): void {
     this.checked = checked;
-    (this.node as typeNode.Checkbox).initialize(checked);
+    (this.node as typeNode.Checkbox).attribute
+      .select(this.checked);
   }
 }

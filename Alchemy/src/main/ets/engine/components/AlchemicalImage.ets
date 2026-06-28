@@ -31,6 +31,10 @@ export class AlchemicalImage extends AlchemicalComponent {
     this.node = image;
   }
 
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalImage.json');
+  }
+
   /** 设置图片资源路径。 */
   setSrc(src: string): void {
     this.src = src;

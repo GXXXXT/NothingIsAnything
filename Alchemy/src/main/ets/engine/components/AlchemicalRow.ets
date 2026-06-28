@@ -28,4 +28,8 @@ export class AlchemicalRow extends AlchemicalComponent {
     let row: typeNode.Row = typeNode.createNode(this.uiContext, 'Row');
     this.node = row;
   }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalRow.json');
+  }
 }
