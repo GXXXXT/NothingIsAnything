@@ -1,0 +1,10 @@
+{
+  "title": "Alchemy Common Types",
+  "description": "Common type definitions used across Alchemy rules.",
+  "$defs": {
+    "ComponentId": {
+      "type": "string",
+      "description": "The unique identifier for a component."
+    }
+  }
+}

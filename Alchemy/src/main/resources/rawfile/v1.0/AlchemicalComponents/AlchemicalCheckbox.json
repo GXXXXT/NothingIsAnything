@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../common.json#/$defs/ComponentId"
+    },
+    "componentType": {
+      "const": "Checkbox"
+    },
+    "child": {
+      "type": "object",
+      "description": "The ID lists of the child component(egs. [\"childOne\", \"chileTwo\"]). Do NOT define the child component inline."
+    },
+    "params": {
+      "name": {
+        "type": "string",
+        "description": "The name identifier for the checkbox."
+      },
+      "group": {
+        "type": "string",
+        "description": "The group name for radio-style grouping."
+      },
+      "checked": {
+        "type": "boolean",
+        "description": "Whether the checkbox is checked."
+      }
+    }
+  },
+  "required": [
+    "id",
+    "componentType",
+    "params.name",
+    "params.group"
+  ]
+}

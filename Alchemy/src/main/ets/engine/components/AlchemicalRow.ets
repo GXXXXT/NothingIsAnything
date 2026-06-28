@@ -13,22 +13,23 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalComponent } from "./AlchemicalComponent";
+import { typeNode } from "@ohos.arkui.node";
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod({
-    uiContext: this.getUIContext()
-  });
+/**
+ * 炼金横向布局 — 封装 ArkUI Row 容器组件。
+ *
+ * 子节点沿水平方向排列，可作为其他组件的父容器。
+ */
+export class AlchemicalRow extends AlchemicalComponent {
 
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
+  constructor(uiContext: UIContext) {
+    super(uiContext);
+    let row: typeNode.Row = typeNode.createNode(this.uiContext, 'Row');
+    this.node = row;
+  }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalRow.json');
   }
 }

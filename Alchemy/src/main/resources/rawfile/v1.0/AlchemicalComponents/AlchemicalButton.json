@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../common.json#/$defs/ComponentId"
+    },
+    "componentType": {
+      "const": "Button"
+    },
+    "params": {
+      "label": {
+        "type": "string",
+        "description": "Button text content. When the length of the text exceeds the width of the button, the text will be truncated."
+      }
+    }
+  },
+  "required": [
+    "id",
+    "componentType",
+    "params.label"
+  ]
+}

@@ -13,22 +13,23 @@
  * limitations under the License.
  */
 
-import {
-  AlchemicalFurnace,
-  AlchemicalRod,
-  AlchemicalRodCreator
-} from '@gxxxxt/alchemy'
+import { AlchemicalComponent } from "./AlchemicalComponent";
+import { typeNode } from "@ohos.arkui.node";
 
-@Entry
-@Component
-struct Index {
-  @State alchemicalRod: AlchemicalRod = AlchemicalRodCreator.forgeAlchemicalRod({
-    uiContext: this.getUIContext()
-  });
+/**
+ * 炼金列表 — 封装 ArkUI List 滚动列表容器。
+ *
+ * 支持垂直/水平滚动，子节点作为列表项依次排列。
+ */
+export class AlchemicalList extends AlchemicalComponent {
 
-  build() {
-    Column() {
-      AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
-    }
+  constructor(uiContext: UIContext) {
+    super(uiContext);
+    let list: typeNode.List = typeNode.createNode(this.uiContext, 'List');
+    this.node = list;
+  }
+
+  override buildRule(): void {
+    this.loadRule('v1.0/AlchemicalComponents/AlchemicalList.json');
   }
 }

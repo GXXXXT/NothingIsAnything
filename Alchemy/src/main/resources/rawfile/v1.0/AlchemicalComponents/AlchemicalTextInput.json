@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../common.json#/$defs/ComponentId"
+    },
+    "componentType": {
+      "const": "TextInput"
+    },
+    "child": {
+      "type": "object",
+      "description": "The ID lists of the child component(egs. [\"childOne\", \"chileTwo\"]). Do NOT define the child component inline."
+    },
+    "params": {
+      "text": {
+        "type": "string",
+        "description": "The current text value of the input field."
+      },
+      "placeholder": {
+        "type": "string",
+        "description": "The placeholder hint text when the input is empty."
+      }
+    }
+  },
+  "required": [
+    "id",
+    "componentType"
+  ]
+}

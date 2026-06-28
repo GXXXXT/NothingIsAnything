@@ -6,3 +6,6 @@
 /.test
 /.hvigor
 /.idea
+/build-profile.json5
+
+/Alchemy/BuildProfile.ets

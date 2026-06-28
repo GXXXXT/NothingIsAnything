@@ -1,0 +1,213 @@
+[
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "root",
+      "componentType": "Column",
+      "child": [
+        "headerRow",
+        "divider",
+        "contentText",
+        "sliderRow",
+        "checkboxRow",
+        "inputField",
+        "submitButton",
+        "resultGrid"
+      ],
+      "params": {}
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "headerRow",
+      "componentType": "Row",
+      "child": [
+        "avatar",
+        "username"
+      ],
+      "params": {}
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "avatar",
+      "componentType": "Image",
+      "params": {
+        "src": "/res/avatar.png"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "username",
+      "componentType": "Text",
+      "params": {
+        "text": "炼金术士"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "divider",
+      "componentType": "Divider",
+      "params": {}
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "contentText",
+      "componentType": "Text",
+      "params": {
+        "text": "欢迎来到炼金工坊"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "sliderRow",
+      "componentType": "Row",
+      "child": [
+        "sliderLabel",
+        "progressSlider"
+      ],
+      "params": {}
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "sliderLabel",
+      "componentType": "Text",
+      "params": {
+        "text": "进度: 0%"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "progressSlider",
+      "componentType": "Slider",
+      "params": {
+        "value": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "checkboxRow",
+      "componentType": "Row",
+      "child": [
+        "agreeCheckbox",
+        "checkboxLabel"
+      ],
+      "params": {}
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "agreeCheckbox",
+      "componentType": "Checkbox",
+      "params": {
+        "name": "agreement",
+        "group": "settings",
+        "checked": false
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "checkboxLabel",
+      "componentType": "Text",
+      "params": {
+        "text": "同意用户协议"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "inputField",
+      "componentType": "TextInput",
+      "params": {
+        "text": "",
+        "placeholder": "请输入你的炼金咒语"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "submitButton",
+      "componentType": "Button",
+      "params": {
+        "label": "开始炼制"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "resultGrid",
+      "componentType": "Grid",
+      "child": [
+        "gridItem1",
+        "gridItem2"
+      ],
+      "params": {}
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "gridItem1",
+      "componentType": "Text",
+      "params": {
+        "text": "🏆 经验 +100"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_COMPONENT": {
+      "id": "gridItem2",
+      "componentType": "Text",
+      "params": {
+        "text": "💎 金币 +50"
+      }
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_DATA": {
+      "id": "progressSlider",
+      "value": 50
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_DATA": {
+      "id": "sliderLabel",
+      "text": "进度: 50%"
+    }
+  },
+  {
+    "version": "1.0",
+    "UPDATE_DATA": {
+      "id": "contentText",
+      "text": "炼金反应进行中… 已完成一半"
+    }
+  }
+]
