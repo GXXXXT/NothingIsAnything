@@ -13,23 +13,18 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { wrapBuilder } from '@kit.ArkUI';
+import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
 
-/**
- * 炼金横向布局 — 封装 ArkUI Row 容器组件。
- *
- * 子节点沿水平方向排列，可作为其他组件的父容器。
- */
-export class AlchemicalRow extends AlchemicalComponent {
-
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let row: typeNode.Row = typeNode.createNode(this.uiContext, 'Row');
-    this.node = row;
+@Builder
+export function AlchemicalRowBuilder(node: ComponentNode) {
+  Row() {
+    ForEach(node.children, (child: ComponentNode) => {
+      AlchemicalComponent.RenderTree(child)
+    }, (child: ComponentNode) => child.id)
   }
-
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalRow.json');
-  }
+  .width(node.props['width'] as string ?? '100%')
+  .height(node.props['height'] as string ?? '100%')
 }
+
+AlchemicalComponent.register('Row', wrapBuilder(AlchemicalRowBuilder));

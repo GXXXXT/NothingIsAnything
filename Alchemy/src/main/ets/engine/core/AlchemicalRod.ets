@@ -15,72 +15,72 @@
 
 import { AlchemicalRod } from '../../interface/AlchemicalRod'
 import { AlchemicalFurnaceImpl } from './AlchemicalFurnace';
+import { ComponentNode } from '../components/AlchemicalComponent';
 import { AlchemicalPotion, AlchemicalPotionType } from '../../interface/Alchemy';
 import { parseMessage, parseComponentPotion, ComponentDescriptor } from '../common/AlchemicalUtils';
 
 /**
- * AlchemicalRodImpl — 接收外部消息，解析并驱动组件树构建。
+ * AlchemicalRodImpl — 接收外部消息，直接构建 ComponentNode 树。
  *
- * 流水线：
- * 1. {@link parseMessage} 解析 JSON → AlchemicalPotion[]
- * 2. 遍历 potions，逐条调用 {@link parseComponentPotion} 并构建 parentMap
- * 3. 遍历解析结果，通过 {@link AlchemicalNodeController.addNode} 创建挂载
+ * 通过 @ObservedV2 + @Trace，节点树变更自动触发 ForEach 重渲染，
+ * 不再依赖 NodeContainer / NodeController 体系。
  */
 export class AlchemicalRodImpl implements AlchemicalRod {
   uiContext: UIContext;
+  private furnace: AlchemicalFurnaceImpl | null = null;
 
   constructor(uiContext: UIContext) {
     this.uiContext = uiContext;
   }
 
+  bindFurnace(furnace: AlchemicalFurnaceImpl): void {
+    this.furnace = furnace;
+  }
+
   onReceive(message: string): void {
-    let controller = AlchemicalFurnaceImpl.alchemicalController;
-    if (!controller) {
-      console.error('[AlchemicalRodImpl] Controller not initialized');
+    const furnace = this.furnace;
+    if (!furnace) {
+      console.error('[AlchemicalRodImpl] Furnace not bound');
       return;
     }
 
-    let potions = parseMessage(message);
-    let descriptors: ComponentDescriptor[] = [];
-    let parentMap = new Map<string, string>();
+    const potions = parseMessage(message);
+    const descriptors: ComponentDescriptor[] = [];
+    const parentMap = new Map<string, string>();
 
-    // 第一趟：解析每条药剂，构建父子映射
+    // 第一趟：收集组件描述与父子关系
     for (let potion of potions) {
       if (potion.type !== AlchemicalPotionType.UPDATE_COMPONENT) {
         continue;
       }
-
-      let desc = parseComponentPotion(potion);
-      if (!desc) {
-        continue;
-      }
+      const desc = parseComponentPotion(potion);
+      if (!desc) continue;
       descriptors.push(desc);
-
       for (let childId of desc.childIds) {
         parentMap.set(childId, desc.id);
       }
     }
 
-    // 第二趟：创建组件并挂载
+    // 第二趟：创建或更新节点
     for (let desc of descriptors) {
-      if (desc.id === 'root') {
-        let root = controller.getComponent('root');
-        if (root) {
-          root.update(desc.params);
-        }
-        continue;
-      }
+      let node = furnace.getNode(desc.id);
 
-      let parentId = parentMap.get(desc.id);
-      if (!parentId) {
-        console.error(`[AlchemicalRodImpl] No parent found for: ${desc.id}`);
-        continue;
-      }
+      if (node) {
+        // 已存在 → @Trace props 变更触发精确重渲染
+        node.props = { ...node.props, ...desc.params };
+      } else {
+        // 新节点 → 创建并挂载，@Trace children 变更触发 ForEach
+        const newNode = new ComponentNode(desc.id, desc.componentType, desc.params);
 
-      if (controller.addNode(parentId, desc.id, desc.componentType)) {
-        let component = controller.getComponent(desc.id);
-        if (component) {
-          component.update(desc.params);
+        if (desc.id === 'root') {
+          furnace.addRootNode(newNode);
+        } else {
+          const parentId = parentMap.get(desc.id);
+          if (parentId) {
+            furnace.addChildNode(parentId, newNode);
+          } else {
+            console.error(`[AlchemicalRodImpl] No parent found for: ${desc.id}`);
+          }
         }
       }
     }

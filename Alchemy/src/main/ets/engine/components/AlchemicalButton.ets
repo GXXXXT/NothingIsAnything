@@ -13,31 +13,14 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { wrapBuilder } from '@kit.ArkUI';
+import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
 
-/**
- * 炼金按钮 — 封装 ArkUI Button 组件。
- *
- * 支持设置按钮文本标签，通过 {@link setLabel} 动态更新。
- */
-export class AlchemicalButton extends AlchemicalComponent {
-  private label: string = '';
-
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let button: typeNode.Button = typeNode.createNode(this.uiContext, 'Button');
-    button.initialize(this.label);
-    this.node = button;
-  }
-
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalButton.json');
-  }
-
-  /** 设置按钮文本标签。 */
-  setLabel(label: string): void {
-    this.label = label;
-    (this.node as typeNode.Button).initialize(this.label);
-  }
+@Builder
+export function AlchemicalButtonBuilder(node: ComponentNode) {
+  Button(node.props['text'] as string ?? '')
+    .width(node.props['width'] as string ?? '100%')
+    .height(node.props['height'] as string ?? '100%')
 }
+
+AlchemicalComponent.register('Button', wrapBuilder(AlchemicalButtonBuilder));

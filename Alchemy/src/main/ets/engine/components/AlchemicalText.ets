@@ -13,25 +13,14 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { wrapBuilder } from '@kit.ArkUI';
+import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
 
-export class AlchemicalText extends AlchemicalComponent {
-  private textValue: string = ''
-
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let text: typeNode.Text = typeNode.createNode(this.uiContext, 'Text');
-    text.initialize(this.textValue);
-    this.node = text;
-  }
-
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalText.json');
-  }
-
-  setText(textValue: string): void {
-    this.textValue = textValue;
-    (this.node as typeNode.Text).initialize(textValue);
-  }
+@Builder
+export function AlchemicalTextBuilder(node: ComponentNode) {
+  Text(node.props['text'] as string ?? '')
+    .fontSize(node.props['fontSize'] as number ?? 16)
+    .fontColor(node.props['color'] as string ?? '#000000')
 }
+
+AlchemicalComponent.register('Text', wrapBuilder(AlchemicalTextBuilder));

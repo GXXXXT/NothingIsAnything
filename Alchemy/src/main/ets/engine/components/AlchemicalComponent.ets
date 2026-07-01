@@ -13,76 +13,64 @@
  * limitations under the License.
  */
 
-import { FrameNode } from '@ohos.arkui.node';
-import { util } from '@kit.ArkTS';
+import { wrapBuilder } from '@kit.ArkUI';
+import { NodeBuilder } from '../type/AlchemicalType';
+
+// 导入全部组件文件，触发各模块的 AlchemicalComponent.register 自注册
+import './AlchemicalText'
+import './AlchemicalButton'
+import './AlchemicalImage'
+import './AlchemicalDivider'
+import './AlchemicalCheckbox'
+import './AlchemicalTextInput'
+import './AlchemicalSlider'
+import './AlchemicalColumn'
+import './AlchemicalRow'
+import './AlchemicalList'
+import './AlchemicalGrid'
 
 /**
- * 炼金组件基类 — 所有可视化组件继承于此。
- * 子类必须实现 createNode()，返回一个 ArkUI FrameNode，
- * 然后通过 getNode() 惰性获取，最后交由 AlchemicalFurnace 的
- * NodeController.appendChild() 挂载到节点树中。
+ * 组件树节点 — @ObservedV2 + @Trace 实现深度状态追踪。
+ *
+ * props 或 children 变更时 ArkUI V2 自动触发 ForEach / @Builder 精确重渲染。
  */
-export abstract class AlchemicalComponent {
-  protected uiContext: UIContext;
-  protected node: FrameNode | null = null;
+@ObservedV2
+export class ComponentNode {
+  @Trace id: string;
+  @Trace type: string;
+  @Trace props: Record<string, Object>;
+  @Trace children: ComponentNode[];
 
-  /** 组件的 JSON Schema 规则内容，由 {@link buildRule} 从 rawfile 加载。 */
-  protected rule: string | undefined;
+  constructor(id: string, type: string, props: Record<string, Object> = {}) {
+    this.id = id;
+    this.type = type;
+    this.props = props;
+    this.children = [];
+  }
+}
 
-  constructor(uiContext: UIContext) {
-    this.uiContext = uiContext;
+/** WrappedBuilder 注册表 + 递归渲染 — 组件 @Builder 查找、注册与树遍历。 */
+export class AlchemicalComponent {
+  private static readonly builders = new Map<string, NodeBuilder>();
+
+  /** 注册组件 @Builder（各组件文件模块加载时调用）。 */
+  static register(type: string, b: NodeBuilder): void {
+    AlchemicalComponent.builders.set(type, b);
   }
 
-  /** 子类必须实现，调用 {@link loadRule} 加载对应的规则文件。 */
-  abstract buildRule(): void;
+  /** 按类型名获取已注册的 WrappedBuilder。 */
+  static get(type: string): NodeBuilder | undefined {
+    return AlchemicalComponent.builders.get(type);
+  }
 
   /**
-   * 从 rawfile 加载 JSON Schema 规则文件。
-   *
-   * @param path 相对于 rawfile 根目录的路径，如 'v1.0/Alchemicalcomponents/AlchemicalButton.json'
+   * 递归渲染组件树 — 容器 builder 内 ForEach 调用此方法深度遍历子节点。
    */
-  protected loadRule(path: string): void {
-    try {
-      let ctx = this.uiContext.getHostContext();
-      if (!ctx) {
-        console.error('[AlchemicalComponent] Failed to get host context');
-        return;
-      }
-      ctx.resourceManager.getRawFileContent(
-        path,
-        (error: BusinessError, value: Uint8Array) => {
-          if (error) {
-            console.error(`[AlchemicalComponent] Failed to load rule "${path}": ${error.message}`);
-            return;
-          }
-          let textDecoder = util.TextDecoder.create('utf-8');
-          this.rule = textDecoder.decodeWithStream(value);
-        }
-      );
-    } catch (e) {
-      console.error(`[AlchemicalComponent] loadRule error: ${JSON.stringify(e)}`);
+  @Builder
+  static RenderTree(node: ComponentNode) {
+    const b = AlchemicalComponent.get(node.type);
+    if (b) {
+      b.builder(node);
     }
-  }
-
-  /**
-   * 获取该组件对应的 FrameNode — 惰性创建，首次调用才会构造。
-   */
-  getNode(): FrameNode | null {
-    return this.node;
-  }
-
-  /**
-   * 更新组件状态。子类可重写以刷新节点属性（文字、颜色等）。
-   * @param params 任意结构的数据
-   */
-  update(params?: object): void {
-    // 子类按需重写
-  }
-
-  /**
-   * 销毁时释放节点引用。
-   */
-  dispose(): void {
-    this.node = null;
   }
 }

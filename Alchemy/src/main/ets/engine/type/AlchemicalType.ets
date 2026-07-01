@@ -13,18 +13,8 @@
  * limitations under the License.
  */
 
-import { wrapBuilder } from '@kit.ArkUI';
-import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
+import { WrappedBuilder } from '@kit.ArkUI';
+import { ComponentNode } from '../components/AlchemicalComponent';
 
-@Builder
-export function AlchemicalListBuilder(node: ComponentNode) {
-  List() {
-    ForEach(node.children, (child: ComponentNode) => {
-      ListItem() { AlchemicalComponent.RenderTree(child) }
-    }, (child: ComponentNode) => child.id)
-  }
-  .width(node.props['width'] as string ?? '100%')
-  .height(node.props['height'] as string ?? '100%')
-}
-
-AlchemicalComponent.register('List', wrapBuilder(AlchemicalListBuilder));
+/** WrappedBuilder 类型别名 — 组件 @Builder 注册表中的值类型。 */
+export type NodeBuilder = WrappedBuilder<[ComponentNode]>;

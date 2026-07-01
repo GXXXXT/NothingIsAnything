@@ -13,23 +13,12 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { wrapBuilder } from '@kit.ArkUI';
+import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
 
-/**
- * 炼金分割线 — 封装 ArkUI Divider 组件。
- *
- * 用于在布局中绘制水平或垂直分割线。
- */
-export class AlchemicalDivider extends AlchemicalComponent {
-
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let divider: typeNode.Divider = typeNode.createNode(this.uiContext, 'Divider');
-    this.node = divider;
-  }
-
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalDivider.json');
-  }
+@Builder
+export function AlchemicalDividerBuilder(node: ComponentNode) {
+  Divider()
 }
+
+AlchemicalComponent.register('Divider', wrapBuilder(AlchemicalDividerBuilder));

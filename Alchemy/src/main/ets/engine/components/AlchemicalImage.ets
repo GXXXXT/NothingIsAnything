@@ -13,31 +13,14 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { wrapBuilder } from '@kit.ArkUI';
+import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
 
-/**
- * 炼金图片 — 封装 ArkUI Image 组件。
- *
- * 支持设置图片资源路径，通过 {@link setSrc} 动态更新。
- */
-export class AlchemicalImage extends AlchemicalComponent {
-  private src: string = '';
-
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let image: typeNode.Image = typeNode.createNode(this.uiContext, 'Image');
-    image.initialize(this.src);
-    this.node = image;
-  }
-
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalImage.json');
-  }
-
-  /** 设置图片资源路径。 */
-  setSrc(src: string): void {
-    this.src = src;
-    (this.node as typeNode.Image).initialize(src);
-  }
+@Builder
+export function AlchemicalImageBuilder(node: ComponentNode) {
+  Image(node.props['src'] as string ?? '')
+    .width(node.props['width'] as string ?? '100%')
+    .height(node.props['height'] as string ?? '100%')
 }
+
+AlchemicalComponent.register('Image', wrapBuilder(AlchemicalImageBuilder));

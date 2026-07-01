@@ -13,18 +13,18 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { wrapBuilder } from '@kit.ArkUI';
+import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
 
-export class AlchemicalColumn extends AlchemicalComponent {
-
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let column: typeNode.Column = typeNode.createNode(this.uiContext, 'Column');
-    this.node = column;
+@Builder
+export function AlchemicalColumnBuilder(node: ComponentNode) {
+  Column() {
+    ForEach(node.children, (child: ComponentNode) => {
+      AlchemicalComponent.RenderTree(child)
+    }, (child: ComponentNode) => child.id)
   }
-
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalColumn.json');
-  }
+  .width(node.props['width'] as string ?? '100%')
+  .height(node.props['height'] as string ?? '100%')
 }
+
+AlchemicalComponent.register('Column', wrapBuilder(AlchemicalColumnBuilder));

@@ -13,48 +13,13 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { wrapBuilder } from '@kit.ArkUI';
+import { ComponentNode, AlchemicalComponent } from './AlchemicalComponent';
 
-/**
- * 炼金文本输入 — 封装 ArkUI TextInput 组件。
- *
- * 支持设置占位提示文本与输入内容，通过 {@link setPlaceholder}
- * 和 {@link setText} 动态更新。
- */
-export class AlchemicalTextInput extends AlchemicalComponent {
-  private placeholder: string = '';
-  private textValue: string = '';
-
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let textInput: typeNode.TextInput = typeNode.createNode(this.uiContext, 'TextInput');
-    textInput.initialize({
-      text: this.textValue,
-      placeholder: this.placeholder
-    })
-    this.node = textInput;
-  }
-
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalTextInput.json');
-  }
-
-  /** 设置占位提示文本。 */
-  setPlaceholder(placeholder: string): void {
-    this.placeholder = placeholder;
-    (this.node as typeNode.TextInput).initialize({
-      text: this.textValue,
-      placeholder: this.placeholder
-    })
-  }
-
-  /** 设置输入框文本内容。 */
-  setText(textValue: string): void {
-    this.textValue = textValue;
-    (this.node as typeNode.TextInput).initialize({
-      text: this.textValue,
-      placeholder: this.placeholder
-    })
-  }
+@Builder
+export function AlchemicalTextInputBuilder(node: ComponentNode) {
+  TextInput({ placeholder: node.props['placeholder'] as string ?? '' })
+    .width(node.props['width'] as string ?? '100%')
 }
+
+AlchemicalComponent.register('TextInput', wrapBuilder(AlchemicalTextInputBuilder));
