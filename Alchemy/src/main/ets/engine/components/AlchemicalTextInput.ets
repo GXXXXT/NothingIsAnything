@@ -13,48 +13,43 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { AlchemicalNode, BasicAlchemyAttribute } from './AlchemicalNode';
+import { MutableBinding } from '@kit.ArkUI';
+import { AlchemicalUtils } from '../common/AlchemicalUtils';
 
-/**
- * 炼金文本输入 — 封装 ArkUI TextInput 组件。
- *
- * 支持设置占位提示文本与输入内容，通过 {@link setPlaceholder}
- * 和 {@link setText} 动态更新。
- */
-export class AlchemicalTextInput extends AlchemicalComponent {
-  private placeholder: string = '';
-  private textValue: string = '';
+@ObservedV2
+export class AlchemyTextInputAttribute extends BasicAlchemyAttribute {
+  @Trace text: string = '';
+  @Trace placeholder: string = '';
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let textInput: typeNode.TextInput = typeNode.createNode(this.uiContext, 'TextInput');
-    textInput.initialize({
-      text: this.textValue,
-      placeholder: this.placeholder
-    })
-    this.node = textInput;
+  constructor(params: object | undefined = undefined) {
+    super(params);
+
+    if (!params) {
+      return;
+    }
+
+    AlchemicalUtils.assign(this, params);
   }
+}
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalTextInput.json');
-  }
+@Builder
+export function textInputComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalTextInput({
+    componentNode: componentNode.value
+  })
+}
 
-  /** 设置占位提示文本。 */
-  setPlaceholder(placeholder: string): void {
-    this.placeholder = placeholder;
-    (this.node as typeNode.TextInput).initialize({
-      text: this.textValue,
-      placeholder: this.placeholder
+@ComponentV2
+export struct AlchemicalTextInput {
+  @Require @Param componentNode: AlchemicalNode;
+
+  build() {
+    TextInput({
+      text: (this.componentNode.attr as AlchemyTextInputAttribute).text,
+      placeholder: (this.componentNode.attr as AlchemyTextInputAttribute).placeholder
     })
-  }
-
-  /** 设置输入框文本内容。 */
-  setText(textValue: string): void {
-    this.textValue = textValue;
-    (this.node as typeNode.TextInput).initialize({
-      text: this.textValue,
-      placeholder: this.placeholder
-    })
+      .width(this.componentNode.attr.width)
+      .height(this.componentNode.attr.height)
   }
 }

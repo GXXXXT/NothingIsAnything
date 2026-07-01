@@ -13,23 +13,33 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { AlchemicalComponent } from './AlchemicalComponent';
+import { AlchemicalNode } from './AlchemicalNode';
+import { MutableBinding } from '@kit.ArkUI';
 
-/**
- * 炼金网格 — 封装 ArkUI Grid 网格容器。
- *
- * 子节点按行列网格排列，适用于宫格布局等场景。
- */
-export class AlchemicalGrid extends AlchemicalComponent {
+@Builder
+export function gridComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalGrid({
+    componentNode: componentNode.value
+  })
+}
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let grid: typeNode.Grid = typeNode.createNode(this.uiContext, 'Grid');
-    this.node = grid;
-  }
+@ComponentV2
+export struct AlchemicalGrid {
+  @Require @Param componentNode: AlchemicalNode;
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalGrid.json');
+  build() {
+    Grid() {
+      ForEach(this.componentNode.getChildren(), (child: AlchemicalNode) => {
+        GridItem() {
+          AlchemicalComponent({
+            componentNode: child,
+            componentBuilder: AlchemicalComponent.componentMap.get(child.type)
+          })
+        }
+      })
+    }
+    .width(this.componentNode.attr.width)
+    .height(this.componentNode.attr.height)
   }
 }

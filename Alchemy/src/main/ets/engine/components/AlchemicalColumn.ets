@@ -13,18 +13,31 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { AlchemicalComponent } from './AlchemicalComponent';
+import { AlchemicalNode } from './AlchemicalNode';
+import { MutableBinding } from '@kit.ArkUI';
 
-export class AlchemicalColumn extends AlchemicalComponent {
+@Builder
+export function columnComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalColumn({
+    componentNode: componentNode.value
+  })
+}
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let column: typeNode.Column = typeNode.createNode(this.uiContext, 'Column');
-    this.node = column;
-  }
+@ComponentV2
+export struct AlchemicalColumn {
+  @Require @Param componentNode: AlchemicalNode;
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalColumn.json');
+  build() {
+    Column() {
+      ForEach(this.componentNode.getChildren(), (child: AlchemicalNode) => {
+        AlchemicalComponent({
+          componentNode: child,
+          componentBuilder: AlchemicalComponent.componentMap.get(child.type)
+        })
+      })
+    }
+    .width(this.componentNode.attr.width)
+    .height(this.componentNode.attr.height)
   }
 }

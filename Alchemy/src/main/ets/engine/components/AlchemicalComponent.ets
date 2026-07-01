@@ -13,76 +13,59 @@
  * limitations under the License.
  */
 
-import { FrameNode } from '@ohos.arkui.node';
-import { util } from '@kit.ArkTS';
+import { blankComponentBuilder } from "./AlchemicalBlank";
+import { AlchemyButtonAttribute, buttonComponentBuilder } from "./AlchemicalButton";
+import { AlchemyCheckboxAttribute, checkboxComponentBuilder } from "./AlchemicalCheckbox";
+import { columnComponentBuilder } from "./AlchemicalColumn";
+import { dividerComponentBuilder } from "./AlchemicalDivider";
+import { gridComponentBuilder } from "./AlchemicalGrid";
+import { AlchemyImageAttribute, imageComponentBuilder } from "./AlchemicalImage";
+import { listComponentBuilder } from "./AlchemicalList";
+import { AlchemicalNode, BasicAlchemyAttribute } from "./AlchemicalNode";
+import { rowComponentBuilder } from "./AlchemicalRow";
+import { AlchemySliderAttribute, sliderComponentBuilder } from "./AlchemicalSlider";
+import { AlchemyTextAttribute, textComponentBuilder } from "./AlchemicalText";
+import { AlchemyTextInputAttribute, textInputComponentBuilder } from "./AlchemicalTextInput";
+import { MutableBinding, UIUtils } from "@kit.ArkUI";
 
-/**
- * 炼金组件基类 — 所有可视化组件继承于此。
- * 子类必须实现 createNode()，返回一个 ArkUI FrameNode，
- * 然后通过 getNode() 惰性获取，最后交由 AlchemicalFurnace 的
- * NodeController.appendChild() 挂载到节点树中。
- */
-export abstract class AlchemicalComponent {
-  protected uiContext: UIContext;
-  protected node: FrameNode | null = null;
+@ComponentV2
+export struct AlchemicalComponent {
+  @Require @Param componentNode: AlchemicalNode;
+  @Require @Param componentBuilder: MutableBuilder<[MutableBinding<AlchemicalNode>]> = mutableBuilder(blankComponentBuilder);
 
-  /** 组件的 JSON Schema 规则内容，由 {@link buildRule} 从 rawfile 加载。 */
-  protected rule: string | undefined;
+  public static componentMap: Map<string, MutableBuilder<[MutableBinding<AlchemicalNode>]>> =
+    new Map<string, MutableBuilder<[MutableBinding<AlchemicalNode>]>>([
+    ['Blank', mutableBuilder(blankComponentBuilder)],
+    ['Button', mutableBuilder(buttonComponentBuilder)],
+    ['Checkbox', mutableBuilder(checkboxComponentBuilder)],
+    ['Column', mutableBuilder(columnComponentBuilder)],
+    ['Divider', mutableBuilder(dividerComponentBuilder)],
+    ['Grid', mutableBuilder(gridComponentBuilder)],
+    ['Image', mutableBuilder(imageComponentBuilder)],
+    ['List', mutableBuilder(listComponentBuilder)],
+    ['Row', mutableBuilder(rowComponentBuilder)],
+    ['Slider', mutableBuilder(sliderComponentBuilder)],
+    ['Text', mutableBuilder(textComponentBuilder)],
+    ['TextInput', mutableBuilder(textInputComponentBuilder)]
+  ])
 
-  constructor(uiContext: UIContext) {
-    this.uiContext = uiContext;
-  }
+  public static componentAttributeMap: Map<string, (params: object) => BasicAlchemyAttribute> =
+    new Map<string, (params: object) => BasicAlchemyAttribute>([
+      ['Blank', (params: object) => new BasicAlchemyAttribute(params)],
+      ['Button', (params: object) => new AlchemyButtonAttribute(params)],
+      ['Checkbox', (params: object) => new AlchemyCheckboxAttribute(params)],
+      ['Column', (params: object) => new BasicAlchemyAttribute(params)],
+      ['Divider', (params: object) => new BasicAlchemyAttribute(params)],
+      ['Grid', (params: object) => new BasicAlchemyAttribute(params)],
+      ['Image', (params: object) => new AlchemyImageAttribute(params)],
+      ['List', (params: object) => new BasicAlchemyAttribute(params)],
+      ['Row', (params: object) => new BasicAlchemyAttribute(params)],
+      ['Slider', (params: object) => new AlchemySliderAttribute(params)],
+      ['Text', (params: object) => new AlchemyTextAttribute(params)],
+      ['TextInput', (params: object) => new AlchemyTextInputAttribute(params)]
+    ])
 
-  /** 子类必须实现，调用 {@link loadRule} 加载对应的规则文件。 */
-  abstract buildRule(): void;
-
-  /**
-   * 从 rawfile 加载 JSON Schema 规则文件。
-   *
-   * @param path 相对于 rawfile 根目录的路径，如 'v1.0/Alchemicalcomponents/AlchemicalButton.json'
-   */
-  protected loadRule(path: string): void {
-    try {
-      let ctx = this.uiContext.getHostContext();
-      if (!ctx) {
-        console.error('[AlchemicalComponent] Failed to get host context');
-        return;
-      }
-      ctx.resourceManager.getRawFileContent(
-        path,
-        (error: BusinessError, value: Uint8Array) => {
-          if (error) {
-            console.error(`[AlchemicalComponent] Failed to load rule "${path}": ${error.message}`);
-            return;
-          }
-          let textDecoder = util.TextDecoder.create('utf-8');
-          this.rule = textDecoder.decodeWithStream(value);
-        }
-      );
-    } catch (e) {
-      console.error(`[AlchemicalComponent] loadRule error: ${JSON.stringify(e)}`);
-    }
-  }
-
-  /**
-   * 获取该组件对应的 FrameNode — 惰性创建，首次调用才会构造。
-   */
-  getNode(): FrameNode | null {
-    return this.node;
-  }
-
-  /**
-   * 更新组件状态。子类可重写以刷新节点属性（文字、颜色等）。
-   * @param params 任意结构的数据
-   */
-  update(params?: object): void {
-    // 子类按需重写
-  }
-
-  /**
-   * 销毁时释放节点引用。
-   */
-  dispose(): void {
-    this.node = null;
+  build() {
+    this.componentBuilder.builder(UIUtils.makeBinding(() => this.componentNode))
   }
 }

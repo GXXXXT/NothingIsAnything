@@ -13,35 +13,45 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { AlchemicalNode, BasicAlchemyAttribute } from './AlchemicalNode';
+import { MutableBinding } from '@kit.ArkUI';
+import { AlchemicalUtils } from '../common/AlchemicalUtils';
 
-/**
- * 炼金复选框 — 封装 ArkUI Checkbox 组件。
- *
- * 支持设置选中状态，通过 {@link setChecked} 动态切换。
- */
-export class AlchemicalCheckbox extends AlchemicalComponent {
-  private name: string = '';
-  private group: string = '';
-  private checked: boolean = false;
+@ObservedV2
+export class AlchemyCheckboxAttribute extends BasicAlchemyAttribute {
+  @Trace name: string = '';
+  @Trace group: string = '';
+  @Trace checked: boolean = false;
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let checkbox: typeNode.Checkbox = typeNode.createNode(this.uiContext, 'Checkbox');
-    checkbox.initialize({ name: this.name, group: this.group })
-      .select(this.checked)
-    this.node = checkbox;
+  constructor(params: object | undefined = undefined) {
+    super(params);
+
+    if (!params) {
+      return;
+    }
+
+    AlchemicalUtils.assign(this, params);
   }
+}
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalCheckbox.json');
-  }
+@Builder
+export function checkboxComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalCheckbox({
+    componentNode: componentNode.value
+  })
+}
 
-  /** 设置复选框选中状态。 */
-  setChecked(checked: boolean): void {
-    this.checked = checked;
-    (this.node as typeNode.Checkbox).attribute
-      .select(this.checked);
+@ComponentV2
+export struct AlchemicalCheckbox {
+  @Require @Param componentNode: AlchemicalNode;
+
+  build() {
+    Checkbox({
+      name: (this.componentNode.attr as AlchemyCheckboxAttribute).name,
+      group: (this.componentNode.attr as AlchemyCheckboxAttribute).group
+    })
+      .select((this.componentNode.attr as AlchemyCheckboxAttribute).checked)
+      .width(this.componentNode.attr.width)
+      .height(this.componentNode.attr.height)
   }
 }

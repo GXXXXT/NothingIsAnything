@@ -14,75 +14,69 @@
  */
 
 import { AlchemicalRod } from '../../interface/AlchemicalRod'
+import { AlchemicalPotion, AlchemicalPotionType, ComponentDescriptor } from '../../interface/Alchemy';
+import { AlchemicalUtils } from '../common/AlchemicalUtils';
+import { AlchemyButtonAttribute } from '../components/AlchemicalButton';
+import { AlchemicalComponent } from '../components/AlchemicalComponent';
+import { AlchemicalNode, BasicAlchemyAttribute } from '../components/AlchemicalNode';
+import { AlchemyTextAttribute } from '../components/AlchemicalText';
 import { AlchemicalFurnaceImpl } from './AlchemicalFurnace';
-import { AlchemicalPotion, AlchemicalPotionType } from '../../interface/Alchemy';
-import { parseMessage, parseComponentPotion, ComponentDescriptor } from '../common/AlchemicalUtils';
 
 /**
- * AlchemicalRodImpl — 接收外部消息，解析并驱动组件树构建。
- *
- * 流水线：
- * 1. {@link parseMessage} 解析 JSON → AlchemicalPotion[]
- * 2. 遍历 potions，逐条调用 {@link parseComponentPotion} 并构建 parentMap
- * 3. 遍历解析结果，通过 {@link AlchemicalNodeController.addNode} 创建挂载
+ * AlchemicalRodImpl — 接收外部消息，直接构建 AlchemicalNode 树。
  */
 export class AlchemicalRodImpl implements AlchemicalRod {
   uiContext: UIContext;
+
+  private alchemicalFurnace: AlchemicalFurnaceImpl | undefined = undefined;
 
   constructor(uiContext: UIContext) {
     this.uiContext = uiContext;
   }
 
   onReceive(message: string): void {
-    let controller = AlchemicalFurnaceImpl.alchemicalController;
-    if (!controller) {
-      console.error('[AlchemicalRodImpl] Controller not initialized');
+    let potions: AlchemicalPotion[] = AlchemicalUtils.parseMessage(message);
+
+    potions.forEach((potion: AlchemicalPotion) => {
+      switch (potion.type) {
+        case AlchemicalPotionType.UPDATE_COMPONENT:
+          this.updateComponents(potion.value as ComponentDescriptor);
+          break;
+        case AlchemicalPotionType.UPDATE_DATA:
+          break;
+        default:
+          break;
+      }
+    })
+  }
+
+  registerAlchemicalFurnaceImpl(furnace: AlchemicalFurnaceImpl): void {
+    this.alchemicalFurnace = furnace;
+  }
+
+  private updateComponents(value: ComponentDescriptor): void {
+    const loopRoot: AlchemicalNode | undefined = this.alchemicalFurnace!.nodeList.get(value.id);
+    if (!loopRoot) {
       return;
     }
 
-    let potions = parseMessage(message);
-    let descriptors: ComponentDescriptor[] = [];
-    let parentMap = new Map<string, string>();
-
-    // 第一趟：解析每条药剂，构建父子映射
-    for (let potion of potions) {
-      if (potion.type !== AlchemicalPotionType.UPDATE_COMPONENT) {
-        continue;
-      }
-
-      let desc = parseComponentPotion(potion);
-      if (!desc) {
-        continue;
-      }
-      descriptors.push(desc);
-
-      for (let childId of desc.childIds) {
-        parentMap.set(childId, desc.id);
-      }
+    loopRoot.type = value.componentType;
+    const attribute: BasicAlchemyAttribute | undefined =
+      AlchemicalComponent.componentAttributeMap.get(value.componentType)?.(value.params);
+    if (!attribute) {
+      return;
     }
 
-    // 第二趟：创建组件并挂载
-    for (let desc of descriptors) {
-      if (desc.id === 'root') {
-        let root = controller.getComponent('root');
-        if (root) {
-          root.update(desc.params);
-        }
-        continue;
-      }
+    loopRoot.attr = attribute;
 
-      let parentId = parentMap.get(desc.id);
-      if (!parentId) {
-        console.error(`[AlchemicalRodImpl] No parent found for: ${desc.id}`);
-        continue;
-      }
-
-      if (controller.addNode(parentId, desc.id, desc.componentType)) {
-        let component = controller.getComponent(desc.id);
-        if (component) {
-          component.update(desc.params);
-        }
-      }
+    if (!value.child) {
+      return;
     }
+
+    value.child.forEach((child: string) => {
+      const blank: AlchemicalNode = new AlchemicalNode(child, 'Blank');
+      loopRoot.addChild(blank);
+      this.alchemicalFurnace?.nodeList.set(child, blank);
+    })
   }
 }

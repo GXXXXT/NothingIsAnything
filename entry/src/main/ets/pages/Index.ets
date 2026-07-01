@@ -18,6 +18,8 @@ import {
   AlchemicalRod,
   AlchemicalRodCreator
 } from '@gxxxxt/alchemy'
+import { util } from '@kit.ArkTS';
+import { common } from '@kit.AbilityKit';
 
 @Entry
 @Component
@@ -26,9 +28,34 @@ struct Index {
     uiContext: this.getUIContext()
   });
 
+  a(): void {
+    const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const resourceMgr = context.resourceManager;
+    const fileData: Uint8Array = resourceMgr.getRawFileContentSync('alchemy_message_demo.json');
+
+    const textDecoderOptions: util.TextDecoderOptions = {
+      fatal: false,
+      ignoreBOM: true
+    };
+    const decodeToStringOptions: util.DecodeToStringOptions = {
+      stream: false
+    };
+    const textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
+    const strContent = textDecoder.decodeToString(fileData, decodeToStringOptions);
+
+    this.alchemicalRod.onReceive(strContent);
+  }
+
   build() {
     Column() {
       AlchemicalFurnace({ alchemicalRod: this.alchemicalRod })
+        .width('100%')
+        .height('80%')
+
+      Button('Click')
+        .onClick(() => {
+          this.a();
+        })
     }
   }
 }

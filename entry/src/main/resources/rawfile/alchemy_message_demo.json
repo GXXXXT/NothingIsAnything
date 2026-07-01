@@ -35,7 +35,9 @@
       "id": "avatar",
       "componentType": "Image",
       "params": {
-        "src": "/res/avatar.png"
+        "width": 200,
+        "height": 200,
+        "src": "https://pic3.zhimg.com/v2-da54a429268399b14e1ce1f1f8af6c0b_r.jpg"
       }
     }
   },

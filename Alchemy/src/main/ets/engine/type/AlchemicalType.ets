@@ -13,23 +13,12 @@
  * limitations under the License.
  */
 
-import { AlchemicalNode } from './AlchemicalNode';
-import { MutableBinding } from '@kit.ArkUI';
+import { ComponentDescriptor, DataDescriptor } from "../../interface/Alchemy";
 
-@Builder
-export function dividerComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
-  AlchemicalDivider({
-    componentNode: componentNode.value
-  })
-}
+/** UPDATE_COMPONENT 药剂解析后的组件描述。 */
+export interface MessageToInstruction {
+  version: string;
 
-@ComponentV2
-export struct AlchemicalDivider {
-  @Require @Param componentNode: AlchemicalNode;
-
-  build() {
-    Divider()
-      .width(this.componentNode.attr.width)
-      .height(this.componentNode.attr.height)
-  }
+  UPDATE_DATA?: DataDescriptor;
+  UPDATE_COMPONENT?: ComponentDescriptor;
 }

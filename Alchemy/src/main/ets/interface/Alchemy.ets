@@ -27,6 +27,30 @@ export enum AlchemicalPotionType {
   UPDATE_COMPONENT = 1
 }
 
+/** UPDATE_COMPONENT 药剂解析后的组件描述。 */
+export interface ComponentDescriptor {
+  /** 组件唯一标识 */
+  id: string;
+  /** 组件类型，对应 BuilderRegistry 的 builder 注册表 key */
+  componentType: string;
+  /** 子节点 id 列表 */
+  child?: string[];
+  /** 初始化参数 */
+  params: object;
+}
+
+/** UPDATE_COMPONENT 药剂解析后的组件描述。 */
+export interface DataDescriptor {
+  /** 组件唯一标识 */
+  id: string;
+  /** 组件类型，对应 BuilderRegistry 的 builder 注册表 key */
+  componentType: string;
+  /** 子节点 id 列表 */
+  child?: string[];
+  /** 初始化参数 */
+  params: object;
+}
+
 /**
  * 炼金药剂 — 一次炼金反应的最小描述单元。
  *
@@ -39,5 +63,5 @@ export interface AlchemicalPotion {
   type: AlchemicalPotionType;
 
   /** 反应所需的具体载荷，结构由 type 决定。 */
-  value: object;
+  value: ComponentDescriptor | DataDescriptor;
 }
