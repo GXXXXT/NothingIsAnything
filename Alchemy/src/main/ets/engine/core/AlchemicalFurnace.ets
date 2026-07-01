@@ -20,17 +20,17 @@ import { AlchemicalRodImpl } from './AlchemicalRod'
 export struct AlchemicalFurnaceImpl {
   @Require alchemicalRod: AlchemicalRodImpl | undefined = undefined;;
 
-  private alchemicalController: AlchemicalNodeController | undefined;
+  static alchemicalController: AlchemicalNodeController | undefined;
 
   aboutToAppear(): void {
     if (this.alchemicalRod) {
-      this.alchemicalController = new AlchemicalNodeController(this.alchemicalRod.uiContext);
+      AlchemicalFurnaceImpl.alchemicalController = new AlchemicalNodeController(this.alchemicalRod.uiContext);
     }
   }
 
   build() {
     Column() {
-      NodeContainer(this.alchemicalController)
+      NodeContainer(AlchemicalFurnaceImpl.alchemicalController)
         .width('100%')
         .height('100%');
     }
