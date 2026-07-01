@@ -67,7 +67,7 @@ export function parseMessage(message: string): AlchemicalPotion[] {
 export interface ComponentDescriptor {
   /** 组件唯一标识 */
   id: string;
-  /** 组件类型，对应 ComponentFactory.registry 中的 key */
+  /** 组件类型，对应 AlchemicalComponent 中 builders 注册表的 key */
   componentType: string;
   /** 子节点 id 列表 */
   childIds: string[];

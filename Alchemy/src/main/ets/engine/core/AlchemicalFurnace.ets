@@ -13,28 +13,54 @@
  * limitations under the License.
  */
 
-import { AlchemicalNodeController } from './AlchemicalNodeController'
 import { AlchemicalRodImpl } from './AlchemicalRod'
+import { ComponentNode, RenderTree } from '../components/AlchemicalComponent'
 
 @Component
 export struct AlchemicalFurnaceImpl {
-  @Require alchemicalRod: AlchemicalRodImpl | undefined = undefined;;
-
-  static alchemicalController: AlchemicalNodeController | undefined;
+  @Require alchemicalRod: AlchemicalRodImpl | undefined = undefined;
+  private nodeMap: Map<string, ComponentNode> = new Map();
+  @Local rootNodes: ComponentNode[] = [];
 
   aboutToAppear(): void {
     if (this.alchemicalRod) {
-      AlchemicalFurnaceImpl.alchemicalController = new AlchemicalNodeController(this.alchemicalRod.uiContext);
+      this.alchemicalRod.bindFurnace(this);
     }
   }
 
   build() {
     Column() {
-      NodeContainer(AlchemicalFurnaceImpl.alchemicalController)
-        .width('100%')
-        .height('100%');
+      ForEach(this.rootNodes, (node: ComponentNode) => {
+        RenderTree(node)
+      }, (node: ComponentNode) => node.id)
     }
     .width('100%')
-    .height('100%');
+    .height('100%')
+  }
+
+  // ── Public API for AlchemicalRodImpl ──────────────────────────
+
+  getNode(id: string): ComponentNode | undefined {
+    return this.nodeMap.get(id);
+  }
+
+  addRootNode(node: ComponentNode): void {
+    this.nodeMap.set(node.id, node);
+    this.rootNodes = [...this.rootNodes, node];
+  }
+
+  addChildNode(parentId: string, node: ComponentNode): boolean {
+    const parent = this.nodeMap.get(parentId);
+    if (!parent) return false;
+    this.nodeMap.set(node.id, node);
+    parent.children = [...parent.children, node];
+    return true;
+  }
+
+  updateNodeProps(id: string, props: Record<string, Object>): void {
+    const node = this.nodeMap.get(id);
+    if (node) {
+      node.props = { ...node.props, ...props };
+    }
   }
 }
