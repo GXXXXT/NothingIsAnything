@@ -1,0 +1,54 @@
+Alchemy/src/main/ets/interface/Alchemy.ets
+  s_3b1624f36aefb9::t_e7a5d93cf91a58 41-53
+Alchemy/src/main/ets/engine/type/AlchemicalType.ets
+  s_3b1624f36aefb9::t_b3efac27a241a4 18-20,23
+  h_22e274a52827b7 16,22
+Alchemy/src/main/ets/engine/core/AlchemicalRod.ets
+  s_3b1624f36aefb9::t_77230f39c1e15c 37,39-47,49-50,54
+  s_3b1624f36aefb9::t_c710cd754d31bf 56,58-63,65-70,72-79,81-84,86
+  h_22e274a52827b7 17,19-21,30,52-53,57
+Alchemy/src/main/ets/engine/common/AlchemicalUtils.ets
+  h_22e274a52827b7 17-19,29,31,34,52
+  s_3b1624f36aefb9::t_49ccf5dc40a234 20-28,30,32-33,35-51,53
+Alchemy/src/main/ets/engine/components/AlchemicalNode.ets
+  h_22e274a52827b7 18-19,28,35
+entry/src/main/ets/pages/Index.ets
+  s_3b1624f36aefb9::t_3d565dc872580f 47-48,52
+  h_22e274a52827b7 21-22,32-33,44,46
+  s_3b1624f36aefb9::t_13ddaed6c8180f 56-58
+  s_3b1624f36aefb9::t_433941c014db3c 31
+  s_3b1624f36aefb9::t_99b7b84de3ba0a 34
+  s_3b1624f36aefb9::t_c383b3065bf5f0 53
+Alchemy/src/main/ets/engine/components/AlchemicalButton.ets
+  h_22e274a52827b7 16,19-22,36
+  s_3b1624f36aefb9::t_b89f4264665d8c 24-29,31-33,35,37-38
+Alchemy/src/main/ets/engine/core/AlchemicalFurnace.ets
+  h_22e274a52827b7 28
+  s_3b1624f36aefb9::t_68aef76b9cc09d 27,32-35,37
+Alchemy/src/main/ets/engine/components/AlchemicalComponent.ets
+  h_22e274a52827b7 21-22,27,31-32,35
+  s_3b1624f36aefb9::t_ec337d0bfe98cb 30,33-34,36-37,39
+Alchemy/src/main/ets/engine/components/AlchemicalText.ets
+  h_22e274a52827b7 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.25.116",
+  "base_commit_sha": "708aa39a63121754db4bc38e58d5b75c9e33727d",
+  "prompts": {},
+  "humans": {
+    "h_22e274a52827b7": {
+      "author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  },
+  "sessions": {
+    "s_3b1624f36aefb9": {
+      "agent_id": {
+        "tool": "codegenie-deveco",
+        "id": "1783156135563",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
