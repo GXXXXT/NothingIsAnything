@@ -1,0 +1,60 @@
+Alchemy/src/main/ets/engine/components/AlchemicalComponent.ets
+  h_22e274a52827b7 52-65
+Alchemy/src/main/ets/engine/components/AlchemicalImage.ets
+  s_3b1624f36aefb9::t_e886aa7125f995 33-44,46-49
+Alchemy/src/main/ets/engine/components/AlchemicalText.ets
+  s_3b1624f36aefb9::t_fa35fef8bce1a1 35-46,48-53,55
+Alchemy/src/main/ets/engine/components/AlchemicalNode.ets
+  s_3b1624f36aefb9::t_4de153b4c45688 22
+  s_3b1624f36aefb9::t_08115772d74d31 23
+  s_3b1624f36aefb9::t_ee0fb5603f702a 25,29,31-36,38-43,45-47,49-55,57-58,62-63,65
+  h_22e274a52827b7 15,27
+  s_3b1624f36aefb9::t_96fe025d6c5b70 20
+entry/src/main/module.json5
+  h_22e274a52827b7 49-52
+  s_3b1624f36aefb9::t_3ce8b264a14a63 48
+entry/src/main/resources/rawfile/alchemy_message_demo.json
+  s_3b1624f36aefb9::t_90db4c40dd63d3 38-40
+entry/src/main/ets/pages/Index.ets
+  h_22e274a52827b7 35,45,48,52-54
+Alchemy/src/main/ets/engine/components/AlchemicalSlider.ets
+  s_3b1624f36aefb9::t_69dd1144ea365d 36,38-43,45-47,49-54,56-57
+Alchemy/src/main/ets/engine/components/AlchemicalTextInput.ets
+  s_3b1624f36aefb9::t_fde66b8197d9b0 34-45,47-50,52-53
+Alchemy/src/main/ets/engine/components/AlchemicalButton.ets
+  s_3b1624f36aefb9::t_771e4979a411fb 24
+  s_3b1624f36aefb9::t_ddbc42646f8df5 25-29,31,33-44,46-49
+Alchemy/src/main/ets/engine/common/AlchemicalUtils.ets
+  s_3b1624f36aefb9::t_738738d26d9475 58
+  h_22e274a52827b7 17,57,60,62
+  s_3b1624f36aefb9::t_f407a3945cba56 61
+Alchemy/src/main/ets/interface/Alchemy.ets
+  h_22e274a52827b7 37,41,49,53
+Alchemy/src/main/ets/engine/components/AlchemicalCheckbox.ets
+  s_3b1624f36aefb9::t_776bc6dc74305a 35-46,48-55
+Alchemy/src/main/ets/engine/core/AlchemicalRod.ets
+  s_3b1624f36aefb9::t_250b3b6b7da5df 57-60
+  s_3b1624f36aefb9::t_b6e07d1a826073 63
+  s_3b1624f36aefb9::t_cf0613452eafc5 64-68,70,72-73,75-80,82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.25.116",
+  "base_commit_sha": "67947830a704cd02fec28b78bccc346c8fc3dbe1",
+  "prompts": {},
+  "humans": {
+    "h_22e274a52827b7": {
+      "author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  },
+  "sessions": {
+    "s_3b1624f36aefb9": {
+      "agent_id": {
+        "tool": "codegenie-deveco",
+        "id": "1783156135563",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
