@@ -13,31 +13,39 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { AlchemicalNode, BasicAlchemyAttribute } from './AlchemicalNode';
+import { MutableBinding } from '@kit.ArkUI';
+import { AlchemicalUtils } from '../common/AlchemicalUtils';
 
-/**
- * 炼金按钮 — 封装 ArkUI Button 组件。
- *
- * 支持设置按钮文本标签，通过 {@link setLabel} 动态更新。
- */
-export class AlchemicalButton extends AlchemicalComponent {
-  private label: string = '';
+@ObservedV2
+export class AlchemyButtonAttribute extends BasicAlchemyAttribute {
+  @Trace label: string = '';
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let button: typeNode.Button = typeNode.createNode(this.uiContext, 'Button');
-    button.initialize(this.label);
-    this.node = button;
+  constructor(params: object | undefined = undefined) {
+    super(params);
+
+    if (!params) {
+      return;
+    }
+
+    AlchemicalUtils.assign(this, params);
   }
+}
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalButton.json');
-  }
+@Builder
+export function buttonComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalButton({
+    componentNode: componentNode.value
+  })
+}
 
-  /** 设置按钮文本标签。 */
-  setLabel(label: string): void {
-    this.label = label;
-    (this.node as typeNode.Button).initialize(this.label);
+@ComponentV2
+export struct AlchemicalButton {
+  @Require @Param componentNode: AlchemicalNode;
+
+  build() {
+    Button((this.componentNode.attr as AlchemyButtonAttribute).label)
+      .width(this.componentNode.attr.width)
+      .height(this.componentNode.attr.height)
   }
 }

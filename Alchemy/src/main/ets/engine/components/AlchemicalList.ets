@@ -13,23 +13,33 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { AlchemicalComponent } from './AlchemicalComponent';
+import { AlchemicalNode } from './AlchemicalNode';
+import { MutableBinding } from '@kit.ArkUI';
 
-/**
- * 炼金列表 — 封装 ArkUI List 滚动列表容器。
- *
- * 支持垂直/水平滚动，子节点作为列表项依次排列。
- */
-export class AlchemicalList extends AlchemicalComponent {
+@Builder
+export function listComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalList({
+    componentNode: componentNode.value
+  })
+}
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let list: typeNode.List = typeNode.createNode(this.uiContext, 'List');
-    this.node = list;
-  }
+@ComponentV2
+export struct AlchemicalList {
+  @Require @Param componentNode: AlchemicalNode;
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalList.json');
+  build() {
+    List() {
+      ForEach(this.componentNode.getChildren(), (child: AlchemicalNode) => {
+        ListItem() {
+          AlchemicalComponent({
+            componentNode: child,
+            componentBuilder: AlchemicalComponent.componentMap.get(child.type)
+          })
+        }
+      })
+    }
+    .width(this.componentNode.attr.width)
+    .height(this.componentNode.attr.height)
   }
 }

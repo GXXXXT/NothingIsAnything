@@ -13,31 +13,39 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { AlchemicalNode, BasicAlchemyAttribute } from './AlchemicalNode';
+import { MutableBinding } from '@kit.ArkUI';
+import { AlchemicalUtils } from '../common/AlchemicalUtils';
 
-/**
- * 炼金图片 — 封装 ArkUI Image 组件。
- *
- * 支持设置图片资源路径，通过 {@link setSrc} 动态更新。
- */
-export class AlchemicalImage extends AlchemicalComponent {
-  private src: string = '';
+@ObservedV2
+export class AlchemyImageAttribute extends BasicAlchemyAttribute {
+  @Trace src: string = '';
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let image: typeNode.Image = typeNode.createNode(this.uiContext, 'Image');
-    image.initialize(this.src);
-    this.node = image;
+  constructor(params: object | undefined = undefined) {
+    super(params);
+
+    if (!params) {
+      return;
+    }
+
+    AlchemicalUtils.assign(this, params);
   }
+}
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalImage.json');
-  }
+@Builder
+export function imageComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalImage({
+    componentNode: componentNode.value
+  })
+}
 
-  /** 设置图片资源路径。 */
-  setSrc(src: string): void {
-    this.src = src;
-    (this.node as typeNode.Image).initialize(src);
+@ComponentV2
+export struct AlchemicalImage {
+  @Require @Param componentNode: AlchemicalNode;
+
+  build() {
+    Image((this.componentNode.attr as AlchemyImageAttribute).src)
+      .width(this.componentNode.attr.width)
+      .height(this.componentNode.attr.height)
   }
 }

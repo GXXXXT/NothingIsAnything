@@ -13,31 +13,26 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from './AlchemicalComponent';
 import { AlchemicalNode } from './AlchemicalNode';
 import { MutableBinding } from '@kit.ArkUI';
 
 @Builder
-export function rowComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
-  AlchemicalRow({
+export function blankComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalBlank({
     componentNode: componentNode.value
   })
 }
 
+@Builder
+export function childBuilder(): void {
+  Blank()
+}
+
 @ComponentV2
-export struct AlchemicalRow {
+export struct AlchemicalBlank {
   @Require @Param componentNode: AlchemicalNode;
 
   build() {
-    Row() {
-      ForEach(this.componentNode.getChildren(), (child: AlchemicalNode) => {
-        AlchemicalComponent({
-          componentNode: child,
-          componentBuilder: AlchemicalComponent.componentMap.get(child.type)
-        })
-      })
-    }
-    .width(this.componentNode.attr.width)
-    .height(this.componentNode.attr.height)
+    Blank()
   }
 }

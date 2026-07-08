@@ -28,14 +28,12 @@ import { AlchemicalRod } from './AlchemicalRod'
  * // 在页面中使用
  * AlchemicalFurnace({ alchemicalRod: AlchemicalRodCreator.forgeAlchemicalRod({ uiContext: this.uiContext }) })
  */
-@Component
+@ComponentV2
 export struct AlchemicalFurnace {
   /** 炼金杖实例，提供与外部消息的桥梁。 */
-  @Require alchemicalRod: AlchemicalRod | undefined;
+  @Require @Param alchemicalRod: AlchemicalRod | undefined;
 
   build() {
     AlchemicalFurnaceImpl({ alchemicalRod: this.alchemicalRod as AlchemicalRodImpl })
-      .width('100%')
-      .height('100%')
   }
 }

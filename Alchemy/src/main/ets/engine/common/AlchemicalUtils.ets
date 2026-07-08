@@ -14,93 +14,51 @@
  */
 
 import { AlchemicalPotion, AlchemicalPotionType } from "../../interface/Alchemy";
+import { BasicAlchemyAttribute } from "../components/AlchemicalNode";
+import { MessageToInstruction } from "../type/AlchemicalType";
 
-/**
- * 解析外部消息字符串为 AlchemicalPotion[]。
- *
- * 消息格式为 JSON 数组，每项结构：
- * ```
- * {
- *   "version": "1.0",
- *   "UPDATE_COMPONENT": { "id": "...", "componentType": "...", ... }
- * }
- * // 或
- * {
- *   "version": "1.0",
- *   "UPDATE_DATA": { "id": "...", "value": ... }
- * }
- * ```
- *
- * @param message 原始 JSON 字符串
- * @returns 解析后的 AlchemicalPotion 数组
- */
-export function parseMessage(message: string): AlchemicalPotion[] {
-  let rawArray: object[] = JSON.parse(message) as object[];
-  let potions: AlchemicalPotion[] = [];
 
-  for (let item of rawArray) {
-    let record = item as Record<string, Object>;
+export class AlchemicalUtils {
+  /**
+   * 解析外部消息字符串为 AlchemicalPotion[]。
+   *
+   * @param message 原始 JSON 字符串
+   * @returns 解析后的 AlchemicalPotion 数组
+   */
+  static parseMessage(message: string): AlchemicalPotion[] {
+    const parse: MessageToInstruction[] = JSON.parse(message);
 
-    if (!record || typeof record !== 'object') {
-      continue;
-    }
+    let potions: AlchemicalPotion[] = [];
 
-    if (record['UPDATE_COMPONENT'] !== undefined) {
-      potions.push({
-        type: AlchemicalPotionType.UPDATE_COMPONENT,
-        value: record['UPDATE_COMPONENT'] as object
-      });
-    } else if (record['UPDATE_DATA'] !== undefined) {
-      potions.push({
-        type: AlchemicalPotionType.UPDATE_DATA,
-        value: record['UPDATE_DATA'] as object
-      });
-    }
+    parse.forEach((msg: MessageToInstruction) => {
+      const key = Object.keys(msg).find(k => k === 'UPDATE_DATA' || k === 'UPDATE_COMPONENT');
+
+      switch (key) {
+        case 'UPDATE_DATA':
+          potions.push({
+            type: AlchemicalPotionType.UPDATE_DATA,
+            value: msg.UPDATE_DATA!
+          });
+          break;
+        case 'UPDATE_COMPONENT':
+          potions.push({
+            type: AlchemicalPotionType.UPDATE_COMPONENT,
+            value: msg.UPDATE_COMPONENT!
+          });
+          break;
+        default:
+          break;
+      }
+    })
+
+    return potions;
   }
 
-  return potions;
-}
+  static assign<T extends BasicAlchemyAttribute>(target: T, source: object): void {
+    const sourceKeys = Object.keys(source);
 
-/**
- * UPDATE_COMPONENT 药剂解析后的组件描述。
- */
-export interface ComponentDescriptor {
-  /** 组件唯一标识 */
-  id: string;
-  /** 组件类型，对应 ComponentFactory.registry 中的 key */
-  componentType: string;
-  /** 子节点 id 列表 */
-  childIds: string[];
-  /** 初始化参数 */
-  params: object;
-}
-
-/**
- * 解析单条 UPDATE_COMPONENT 药剂。
- *
- * 将 potion.value 提取为结构化的 {@link ComponentDescriptor}。
- *
- * @param potion 单条 AlchemicalPotion（仅处理 UPDATE_COMPONENT）
- * @returns 解析后的组件描述，类型不匹配或字段缺失时返回 null
- */
-export function parseComponentPotion(potion: AlchemicalPotion): ComponentDescriptor | null {
-  if (potion.type !== AlchemicalPotionType.UPDATE_COMPONENT) {
-    return null;
+    sourceKeys.forEach((key: string) => {
+      Reflect.set(target, key, source[key]);
+    });
   }
-
-  let value = potion.value as Record<string, Object>;
-  let id = value['id'] as string;
-  let componentType = value['componentType'] as string;
-
-  if (!id || !componentType) {
-    console.error('[parseComponentPotion] Missing id or componentType');
-    return null;
-  }
-
-  return {
-    id,
-    componentType,
-    childIds: (value['child'] as string[]) ?? [],
-    params: (value['params'] as object) ?? {}
-  };
 }

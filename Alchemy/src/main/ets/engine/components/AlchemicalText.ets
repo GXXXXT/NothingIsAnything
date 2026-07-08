@@ -13,25 +13,43 @@
  * limitations under the License.
  */
 
-import { AlchemicalComponent } from "./AlchemicalComponent";
-import { typeNode } from "@ohos.arkui.node";
+import { BasicAlchemyAttribute, AlchemicalNode } from "./AlchemicalNode";
+import { MutableBinding } from "@kit.ArkUI";
+import { AlchemicalUtils } from "../common/AlchemicalUtils";
 
-export class AlchemicalText extends AlchemicalComponent {
-  private textValue: string = ''
+@ObservedV2
+export class AlchemyTextAttribute extends BasicAlchemyAttribute {
+  @Trace text: string = '';
+  @Trace fontSize: number = 16;
+  @Trace color: string = '#000000';
 
-  constructor(uiContext: UIContext) {
-    super(uiContext);
-    let text: typeNode.Text = typeNode.createNode(this.uiContext, 'Text');
-    text.initialize(this.textValue);
-    this.node = text;
+  constructor(params: object | undefined = undefined) {
+    super(params);
+
+    if (!params) {
+      return;
+    }
+
+    AlchemicalUtils.assign(this, params);
   }
+}
 
-  override buildRule(): void {
-    this.loadRule('v1.0/AlchemicalComponents/AlchemicalText.json');
-  }
+@Builder
+export function textComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void {
+  AlchemicalText({
+    componentNode: componentNode.value
+  })
+}
 
-  setText(textValue: string): void {
-    this.textValue = textValue;
-    (this.node as typeNode.Text).initialize(textValue);
+@ComponentV2
+export struct AlchemicalText {
+  @Require @Param componentNode: AlchemicalNode;
+
+  build() {
+    Text((this.componentNode.attr as AlchemyTextAttribute).text)
+      .fontSize((this.componentNode.attr as AlchemyTextAttribute).fontSize)
+      .fontColor((this.componentNode.attr as AlchemyTextAttribute).color)
+      .width(this.componentNode.attr.width)
+      .height(this.componentNode.attr.height)
   }
 }

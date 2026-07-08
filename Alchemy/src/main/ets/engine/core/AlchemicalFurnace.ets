@@ -13,28 +13,25 @@
  * limitations under the License.
  */
 
-import { AlchemicalNodeController } from './AlchemicalNodeController'
 import { AlchemicalRodImpl } from './AlchemicalRod'
+import { AlchemicalComponent } from '../components/AlchemicalComponent'
+import { AlchemicalNode } from '../components/AlchemicalNode';
 
-@Component
+@ComponentV2
 export struct AlchemicalFurnaceImpl {
-  @Require alchemicalRod: AlchemicalRodImpl | undefined = undefined;;
-
-  static alchemicalController: AlchemicalNodeController | undefined;
+  @Require @Param private alchemicalRod: AlchemicalRodImpl | undefined = undefined;
+  @Local rootNode: AlchemicalNode = AlchemicalNode.createRoot();
+  @Local nodeList: Map<string, AlchemicalNode> = new Map<string, AlchemicalNode>();
 
   aboutToAppear(): void {
-    if (this.alchemicalRod) {
-      AlchemicalFurnaceImpl.alchemicalController = new AlchemicalNodeController(this.alchemicalRod.uiContext);
-    }
+    this.nodeList.set('root', this.rootNode);
+    this.alchemicalRod?.registerAlchemicalFurnaceImpl(this);
   }
 
   build() {
-    Column() {
-      NodeContainer(AlchemicalFurnaceImpl.alchemicalController)
-        .width('100%')
-        .height('100%');
-    }
-    .width('100%')
-    .height('100%');
+    AlchemicalComponent({
+      componentNode: this.rootNode,
+      componentBuilder: AlchemicalComponent.componentMap.get(this.rootNode.type)
+    })
   }
 }
