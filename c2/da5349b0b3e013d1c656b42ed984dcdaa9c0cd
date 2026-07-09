@@ -1,0 +1,27 @@
+entry/src/main/ets/pages/Index.ets
+  h_22e274a52827b7 47
+  s_3b1624f36aefb9::t_355947bfa3de78 49
+  s_3b1624f36aefb9::t_6fc1f401d460b2 53
+  s_3b1624f36aefb9::t_9f73b664e3d3e5 46,48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.25.116",
+  "base_commit_sha": "c2da5349b0b3e013d1c656b42ed984dcdaa9c0cd",
+  "prompts": {},
+  "humans": {
+    "h_22e274a52827b7": {
+      "author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  },
+  "sessions": {
+    "s_3b1624f36aefb9": {
+      "agent_id": {
+        "tool": "codegenie-deveco",
+        "id": "1783156135563",
+        "model": "unknown"
+      },
+      "human_author": "hanjiajie2000 <hanjiajie1@h-partners.com>"
+    }
+  }
+}
