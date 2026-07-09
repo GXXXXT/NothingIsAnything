@@ -43,7 +43,14 @@ struct Index {
     const textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
     const strContent = textDecoder.decodeToString(fileData, decodeToStringOptions);
 
-    this.alchemicalRod.onReceive(strContent);
+    const parse: object[] = JSON.parse(strContent);
+    let sleep: number = 0;
+    parse.forEach((obj: object) => {
+      setTimeout(() => {
+        this.alchemicalRod.onReceive(JSON.stringify([obj]));
+      }, sleep);
+      sleep += 200;
+    })
   }
 
   build() {
