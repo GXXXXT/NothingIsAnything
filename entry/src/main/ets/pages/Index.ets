@@ -28,7 +28,7 @@ struct Index {
     uiContext: this.getUIContext()
   });
 
-  a(): void {
+  sendMessage(): void {
     const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
     const resourceMgr = context.resourceManager;
     const fileData: Uint8Array = resourceMgr.getRawFileContentSync('alchemy_message_demo.json');
@@ -61,7 +61,7 @@ struct Index {
 
       Button('Click')
         .onClick(() => {
-          this.a();
+          this.sendMessage();
         })
     }
   }

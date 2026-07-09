@@ -14,12 +14,10 @@
  */
 
 import { AlchemicalRod } from '../../interface/AlchemicalRod'
-import { AlchemicalPotion, AlchemicalPotionType, ComponentDescriptor } from '../../interface/Alchemy';
+import { AlchemicalPotion, AlchemicalPotionType, ComponentDescriptor, DataDescriptor } from '../../interface/Alchemy';
 import { AlchemicalUtils } from '../common/AlchemicalUtils';
-import { AlchemyButtonAttribute } from '../components/AlchemicalButton';
 import { AlchemicalComponent } from '../components/AlchemicalComponent';
 import { AlchemicalNode, BasicAlchemyAttribute } from '../components/AlchemicalNode';
-import { AlchemyTextAttribute } from '../components/AlchemicalText';
 import { AlchemicalFurnaceImpl } from './AlchemicalFurnace';
 
 /**
@@ -43,6 +41,7 @@ export class AlchemicalRodImpl implements AlchemicalRod {
           this.updateComponents(potion.value as ComponentDescriptor);
           break;
         case AlchemicalPotionType.UPDATE_DATA:
+          this.updateDataModel(potion.value as DataDescriptor);
           break;
         default:
           break;
@@ -78,5 +77,8 @@ export class AlchemicalRodImpl implements AlchemicalRod {
       loopRoot.addChild(blank);
       this.alchemicalFurnace?.nodeList.set(child, blank);
     })
+  }
+
+  private updateDataModel(value: DataDescriptor): void {
   }
 }
