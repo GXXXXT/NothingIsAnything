@@ -14,12 +14,10 @@
  */
 
 import { AlchemicalRod } from '../../interface/AlchemicalRod'
-import { AlchemicalPotion, AlchemicalPotionType, ComponentDescriptor } from '../../interface/Alchemy';
+import { AlchemicalPotion, AlchemicalPotionType, ComponentDescriptor, DataDescriptor } from '../../interface/Alchemy';
 import { AlchemicalUtils } from '../common/AlchemicalUtils';
-import { AlchemyButtonAttribute } from '../components/AlchemicalButton';
 import { AlchemicalComponent } from '../components/AlchemicalComponent';
 import { AlchemicalNode, BasicAlchemyAttribute } from '../components/AlchemicalNode';
-import { AlchemyTextAttribute } from '../components/AlchemicalText';
 import { AlchemicalFurnaceImpl } from './AlchemicalFurnace';
 
 /**
@@ -43,6 +41,7 @@ export class AlchemicalRodImpl implements AlchemicalRod {
           this.updateComponents(potion.value as ComponentDescriptor);
           break;
         case AlchemicalPotionType.UPDATE_DATA:
+          this.updateDataModel(potion.value as DataDescriptor);
           break;
         default:
           break;
@@ -55,6 +54,32 @@ export class AlchemicalRodImpl implements AlchemicalRod {
   }
 
   private updateComponents(value: ComponentDescriptor): void {
+    const loopRoot: AlchemicalNode | undefined = this.alchemicalFurnace!.nodeList.get(value.id);
+    if (!loopRoot) {
+      return;
+    }
+
+    loopRoot.type = value.componentType;
+    const attribute: BasicAlchemyAttribute | undefined =
+      AlchemicalComponent.componentAttributeMap.get(value.componentType)?.(value.params);
+    if (!attribute) {
+      return;
+    }
+
+    loopRoot.attr = attribute;
+
+    if (!value.child) {
+      return;
+    }
+
+    value.child.forEach((child: string) => {
+      const blank: AlchemicalNode = new AlchemicalNode(child, 'Blank');
+      loopRoot.addChild(blank);
+      this.alchemicalFurnace?.nodeList.set(child, blank);
+    })
+  }
+
+  private updateDataModel(value: DataDescriptor): void {
     const loopRoot: AlchemicalNode | undefined = this.alchemicalFurnace!.nodeList.get(value.id);
     if (!loopRoot) {
       return;
