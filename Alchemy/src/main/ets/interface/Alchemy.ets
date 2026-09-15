@@ -41,14 +41,10 @@ export interface ComponentDescriptor {
 
 /** UPDATE_COMPONENT 药剂解析后的组件描述。 */
 export interface DataDescriptor {
-  /** 组件唯一标识 */
+
   id: string;
-  /** 组件类型，对应 BuilderRegistry 的 builder 注册表 key */
-  componentType: string;
-  /** 子节点 id 列表 */
-  child?: string[];
-  /** 初始化参数 */
-  params: object;
+
+  value: object;
 }
 
 /**
