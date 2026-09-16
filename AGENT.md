@@ -791,7 +791,7 @@ export { AlchemicalRod, AlchemicalRodCreator } from './src/main/ets/interface/Al
 | `UPDATE_DATA` 数据更新 | ❌ 未实现 | `AlchemicalRodImpl.updateDataModel()` 与 `AlchemicalData.updateDataModel()` 均为空方法体 |
 | 递归渲染（Column/Row/List/Grid 容器） | ✅ 已实现 | 各容器 `ForEach(getChildren())` |
 | 组件规则 JSON Schema | 🟡 部分实现 | 仅 11 个组件文件 + `common.json`；`params` 写法不规范（见 #6） |
-| 真实测试覆盖 | ❌ 无 | 4 个测试文件均为脚手架 `assertContain` 样板 |
+| 真实测试覆盖 | ✅ 逻辑层已覆盖 | 44 条 L-Unit 用例，逻辑层可达分支 27/27（见 §4.2 基线） |
 | README / 开发者文档 | ❌ 无 | 本文件即为首份规范 |
 
 ### 1.9 已知问题与技术债（开发时请顺带留意，不要无声扩大）
@@ -803,13 +803,15 @@ export { AlchemicalRod, AlchemicalRodCreator } from './src/main/ets/interface/Al
 | 1 | `UPDATE_DATA` 全链路未实现 | `AlchemicalRod.updateDataModel` / `AlchemicalData.updateDataModel` | demo 里最后 3 条数据指令被静默丢弃 |
 | 2 | `@Trace private static` 语义可疑 | `engine/datamodel/AlchemicalData.ets` | 静态成员 + V2 状态装饰器组合需核实，可能完全无效 |
 | 3 | 协议与样例不一致 | `DataDescriptor = {id, value}` vs demo 中 `UPDATE_DATA: {id, text}` | 契约二义，先定协议再实现 |
-| 4 | 重复指令导致子节点累积 | `AlchemicalRodImpl.updateComponents` 直接 `addChild`，未先清空 | 同 id 消息重放 → 子节点重复 |
-| 5 | 强非空断言 `this.alchemicalFurnace!` | `AlchemicalRodImpl.updateComponents` | 消息早于 Furnace `aboutToAppear` 时崩溃 |
+| 4 | 重复下发父节点指令会**重建子节点对象** | `AlchemicalRodImpl.updateComponents` 对每个 child 新建 `AlchemicalNode` 并覆盖 Map 条目 | 子节点数量不增长（Map 按 id 去重），但**子节点已有状态被丢弃**；实测见 `TC_ROD_006` |
+| 5 | ~~强非空断言 `this.alchemicalFurnace!`~~ | ~~`AlchemicalRodImpl.updateComponents`~~ | ✅ **已修复**（`REQ-20260915-engine-branch-coverage` 的 seam 改造：改为 `nodeRegistry` 空值保护，未注册时安全忽略而非崩溃） |
 | 6 | 规则 JSON 的 `child` 类型写成 `"object"` | `rawfile/v1.0/AlchemicalComponents/*.json` | 应为 `array`，Schema 失效 |
 | 7 | ForEach 缺 keyGenerator | Column / Grid / List / Row（CodeLinter 4 warn） | 列表复用性能劣化 |
 | 8 | `componentMap.get()` 可能为 `undefined` | 各容器 `AlchemicalComponent(...)` 调用处 | 未注册类型依赖默认值兜底，无显式校验 |
 | 9 | 无协议一致性自动化校验 | 全局 | 代码注册表与规则 JSON 漂移无人发现 |
-| 10 | 零真实测试覆盖 | `Alchemy/src/test`、`entry/src/test` | 任何改动都无回归保护 |
+| 10 | ~~零真实测试覆盖~~ | ~~`Alchemy/src/test`、`entry/src/test`~~ | ✅ **已修复**（`REQ-20260915-engine-branch-coverage`：44 条用例，逻辑层可达分支 27/27） |
+| 11 | UI struct 层完全无测试 | 全部 `@ComponentV2` 的 `build()` / `@Builder` | 渲染回归无保护，需设备侧 ohosTest |
+| 12 | `registerAlchemicalFurnaceImpl` 无法被单元测试覆盖 | `AlchemicalRodImpl`（参数为 struct，测试无法构造） | 该 2 行委托逻辑仅由 UI 路径与 `assembleHap` 保护 |
 
 ---
 
@@ -991,11 +993,15 @@ export { AlchemicalRod, AlchemicalRodCreator } from './src/main/ets/interface/Al
 
 | 层级 | 位置 | 测什么 | 运行方式 |
 | --- | --- | --- | --- |
-| **L-Unit 本地单元测试** | `Alchemy/src/test/`、`entry/src/test/` | 纯逻辑：消息解析、属性赋值、节点树增删、协议校验 | DevEco Studio 中运行 Local Test（见 §6.2） |
+| **L-Unit 本地单元测试** | `Alchemy/src/test/`、`entry/src/test/` | 纯逻辑：消息解析、属性赋值、节点树增删、协议校验 | `tools/run-unit-tests.sh`（推荐）；原始命令见 §6.2 |
 | **L-Int 设备集成测试** | `Alchemy/src/ohosTest/`、`entry/src/ohosTest/` | 组件渲染、`onReceive` 端到端、UI 自动化（`@ohos.UiTest`） | 连接设备/模拟器运行 ohosTest |
 | **L-Schema 协议契约校验** | 建议新增（见问题 #9） | 代码注册表 ↔ 规则 JSON ↔ 样例报文 三者一致 | 建议以 L-Unit 实现 |
 
 **优先级**：优先把逻辑下沉到 L-Unit（无设备依赖、反馈快）。**默认要求：引擎逻辑必须有 L-Unit 覆盖。**
+
+**当前基线**（`REQ-20260915-engine-branch-coverage`）：逻辑层可达分支 **27/27 = 100%**，行 109/165，函数 25/50。
+未覆盖的函数全部是 UI 运行时依赖（`@Builder` / struct `build()`）与无法构造的 struct 参数。
+**新增代码不得降低该基线。**
 
 ### 4.3 Hypium 约定
 
@@ -1006,6 +1012,29 @@ export { AlchemicalRod, AlchemicalRodCreator } from './src/main/ets/interface/Al
   避免只断言「不抛异常」；
 - 前置/清理放 `beforeEach` / `afterEach`，确保用例间无状态污染；
 - 新增测试套件必须在同目录 `List.test.ets` 中注册。
+
+**ArkTS 对测试代码的额外约束（已实测踩坑）**
+
+- `arkts-no-untyped-obj-literals`：**禁止把裸对象字面量当参数传递**，测试里构造 `params` 必须
+  先声明 `interface`：
+  ```ts
+  interface TextParams { text: string }        // ✅ 先声明
+  const p: TextParams = { text: 'hi' };         // ✅ 合法
+  new AlchemyTextAttribute({ text: 'hi' });     // ❌ 编译失败
+  ```
+- **struct 无法被伪造**：`AlchemicalFurnaceImpl` 这类 `@ComponentV2` struct 既不能 `new`，
+  也不能用对象字面量 + `as` 断言（`{...} as XxxImpl` 与 `{} as XxxImpl` 均编译失败）。
+  需要替身时，必须走**依赖注入 seam**（见 §5.6）。
+- 用 `{} as UIContext` 这类**类**的断言是可行的（与 struct 不同）。
+- `expect` 断言里不要写 `expect(fn).assertThrowError()` 这类不确定 API；用
+  `try/catch + expect(threw).assertTrue()` 更稳。
+
+### 4.5 覆盖率门槛（回归红线）
+
+- 每个变更的 S5 门禁必须跑 `tools/run-unit-tests.sh` 并记录覆盖率数字；
+- **新增/修改逻辑代码时，分支覆盖率不得低于变更前基线**；
+- 若存在**不可达分支**（如枚举 switch 的 `default`），必须在测试方案中给出**不可达论证**，
+  不得为了让数字好看而删除防御性代码。
 
 ### 4.4 不得伪造验证结果（红线）
 
@@ -1066,6 +1095,24 @@ export { AlchemicalRod, AlchemicalRodCreator } from './src/main/ets/interface/Al
 - 注释用中文，解释「为什么」而非「做什么」；对外 API 使用 `/** */` JSDoc 风格。
 - 修改代码时不要删除既有有价值注释。
 
+### 5.6 可测试性接缝（seam）
+
+引擎里有若干「普通类直接依赖 UI struct」的耦合点（如 `AlchemicalRodImpl` 依赖
+`AlchemicalFurnaceImpl`）。由于 **struct 无法在测试中构造或伪造**（§4.3），这类代码默认不可测。
+
+**规则**：
+
+1. 需要覆盖此类逻辑时，**允许**为生产代码引入**最小的依赖注入接缝**，但必须同时满足：
+   - **行为等价**：逐场景论证等价性（UI 路径、异常路径、空值路径）；
+   - **改动最小**：只碰必要的文件与方法，不做顺带重构；
+   - **可回滚**：作为独立提交，便于 `git revert`；
+   - **在 `02-design.md` 中登记**：写清为什么非改不可、否决了哪些备选方案。
+2. 既有范例：`AlchemicalRodImpl.registerNodeRegistry(registry)` ——
+   UI 路径由 `registerAlchemicalFurnaceImpl(furnace)` 转发 `furnace.nodeList`，
+   测试路径直接注入自建 `Map`。同时消除了原 `!` 断言崩溃风险（问题 #5）。
+3. **禁止**为了让代码可测而把 UI struct 拆成无意义的空壳，或引入测试专用分支
+   （如 `if (isTest)`）—— 那是反模式，应改用注入。
+
 ---
 
 ## 6. 命令与验证清单
@@ -1073,46 +1120,63 @@ export { AlchemicalRod, AlchemicalRodCreator } from './src/main/ets/interface/Al
 ### 6.1 环境前置
 
 ```bash
-# 本机 DevEco Studio 自带工具链（SDK 与构建工具均在其内）
-export DEVECO_SDK_HOME="$HOME/Library/OpenHarmony/Sdk"
-export PATH="/Applications/DevEco-Studio.app/Contents/tools/node/bin:$PATH"
+# ★ 关键：必须使用 DevEco Studio 自带的完整 HarmonyOS SDK。
+#   ~/Library/OpenHarmony/Sdk 缺 native 组件，会导致 "SDK component missing"。
+export DEVECO_SDK_HOME="/Applications/DevEco-Studio.app/Contents/sdk"
+# ★ 必须设置 JAVA_HOME，否则 PackageHap 报 "Unable to locate a Java Runtime"。
+export JAVA_HOME="/Applications/DevEco-Studio.app/Contents/jbr/Contents/Home"
+export PATH="$JAVA_HOME/bin:/Applications/DevEco-Studio.app/Contents/tools/node/bin:$PATH"
 
-HVIGOR=/Applications/DevEco-Studio.app/Contents/tools/hvigor/bin/hvigorw
-OHPM=/Applications/DevEco-Studio.app/Contents/tools/ohpm/bin/ohpm
-LINTER=/Applications/DevEco-Studio.app/Contents/plugins/codelinter/run/index.js
+DEVECO=/Applications/DevEco-Studio.app/Contents
+HVIGOR=$DEVECO/tools/hvigor/bin/hvigorw
+OHPM=$DEVECO/tools/ohpm/bin/ohpm
+LINTER=$DEVECO/plugins/codelinter/run/index.js
 ```
 
 ### 6.2 命令表
 
-> 「验证状态」是本规范编写时在**本机**实测的结果，供参考。执行前请自行复测。
+> 「验证状态」为**本机实测**结果（2026-09-15）。执行前请自行复测。
 
 | 用途 | 命令 | 验证状态 |
 | --- | --- | --- |
 | 安装依赖 | `$OHPM install` | 未实测 |
-| 构建 HAP | `$HVIGOR --no-daemon assembleHap` | ❌ **阻塞**：报 `SDK component missing`（本机 SDK 缺 `native` 组件） |
-| 构建 HAR（Alchemy） | `$HVIGOR --no-daemon assembleHar` | ❌ 同上阻塞 |
-| **CodeLinter 代码检查** | `node "$LINTER" -c ./code-linter.json5 -f default -e error ./Alchemy/src/main/ets` | ✅ **实测可用**：`Errors: 0; Warns: 4`（4 条均为 ForEach 缺 keyGenerator，见问题 #7） |
-| 本地单元测试（L-Unit） | DevEco Studio → 打开 `Alchemy/src/test/LocalUnit.test.ets` → 运行 Local Test；或 CLI `$HVIGOR --no-daemon test`（需 SDK 完整） | 未实测（依赖 §6.3 前置） |
-| 设备集成测试（L-Int） | 连接设备/模拟器后运行 `Alchemy/src/ohosTest` | 未实测 |
+| 构建 HAP | `$HVIGOR --no-daemon assembleHap` | ✅ **实测通过**（`BUILD SUCCESSFUL`，需 §6.1 的 SDK + JAVA_HOME） |
+| 构建 HAR（Alchemy） | `$HVIGOR --no-daemon --mode module -p module=Alchemy@default assembleHar` | 未实测 |
+| **本地单元测试（L-Unit）** | `tools/run-unit-tests.sh` | ✅ **实测通过**：44/44 用例，自动产出覆盖率报告 |
+| 本地单元测试（原始命令） | `$HVIGOR --no-daemon --mode module -p module=Alchemy@default -p product=default test` | ✅ 实测通过 |
+| **覆盖率摘要** | `node tools/coverage-summary.js <模块>/.test/default/outputs/test/reports/coverageReport.json` | ✅ 实测通过 |
+| **CodeLinter 代码检查** | `node "$LINTER" -c ./code-linter.json5 -f default -e error ./Alchemy/src/main/ets` | ✅ 实测：`Errors: 0; Warns: 4`（4 条均为 ForEach 缺 keyGenerator，见问题 #7） |
+| 设备集成测试（L-Int） | 连接设备/模拟器后运行 `Alchemy/src/ohosTest` | 未实测（需设备） |
+
+**产物路径**
+
+| 产物 | 路径 |
+| --- | --- |
+| 覆盖率原始数据 | `<模块>/.test/default/outputs/test/reports/coverageReport.json` |
+| 覆盖率 HTML | `<模块>/.test/default/outputs/test/reports/index.html` |
+| 测试结果 | `<模块>/.test/default/intermediates/test/coverage_data/test_result.txt` |
 
 **CodeLinter 说明**：`-e error` 表示仅 error 级别导致非零退出；warn 不阻塞但**必须记录**。
 项目级规则见 `code-linter.json5`（`plugin:@performance/recommended` + `plugin:@typescript-eslint/recommended`）。
 
 ### 6.3 环境不可用时的处理（重要）
 
-本机 CLI 构建当前被 SDK 组件缺失阻塞。遇到此类情况，AI **必须**：
+若某条验证命令在本机无法执行（缺 SDK 组件、无设备、无 JDK 等），AI **必须**：
 
 1. 停止对构建/测试结果做任何断言；
 2. 在变更文档中如实记录：
    ```
    验证状态：blocked
-   阻塞原因：hvigor 报 SDK component missing（缺 native 组件）
+   阻塞原因：<具体错误原文>
    已执行：<命令原文>
    期望验证：<该命令能证明什么>
-   待办：在 DevEco Studio 中补齐 SDK 组件后重跑
+   待办：<解除条件与后续动作>
    ```
-3. 继续完成**不依赖该命令**的验证（例如 CodeLinter 可用，就必须跑）；
+3. 继续完成**不依赖该命令**的验证（例如 CodeLinter 能跑就必须跑）；
 4. 在最终交付说明中**显式列出未能验证的项**。
+
+> 历史案例：曾因 `DEVECO_SDK_HOME` 指向 `~/Library/OpenHarmony/Sdk`（缺 `native`）导致全部构建命令失败。
+> 定位后改用 DevEco 自带 SDK 即解除。遇到环境报错的正确做法是**先排查环境**，再决定是否记录 blocked。
 
 ---
 

@@ -26,7 +26,7 @@ import { AlchemicalFurnaceImpl } from './AlchemicalFurnace';
 export class AlchemicalRodImpl implements AlchemicalRod {
   uiContext: UIContext;
 
-  private alchemicalFurnace: AlchemicalFurnaceImpl | undefined = undefined;
+  private nodeRegistry: Map<string, AlchemicalNode> | undefined = undefined;
 
   constructor(uiContext: UIContext) {
     this.uiContext = uiContext;
@@ -50,11 +50,26 @@ export class AlchemicalRodImpl implements AlchemicalRod {
   }
 
   registerAlchemicalFurnaceImpl(furnace: AlchemicalFurnaceImpl): void {
-    this.alchemicalFurnace = furnace;
+    this.registerNodeRegistry(furnace.nodeList);
+  }
+
+  /**
+   * 注入节点注册表 —— 炼金杖更新组件时使用的唯一节点来源。
+   *
+   * UI 场景下由 {@link AlchemicalFurnaceImpl} 在 aboutToAppear 中经
+   * {@link registerAlchemicalFurnaceImpl} 间接调用；单元测试可直接注入自建注册表。
+   */
+  registerNodeRegistry(registry: Map<string, AlchemicalNode>): void {
+    this.nodeRegistry = registry;
   }
 
   private updateComponents(value: ComponentDescriptor): void {
-    const loopRoot: AlchemicalNode | undefined = this.alchemicalFurnace!.nodeList.get(value.id);
+    const registry: Map<string, AlchemicalNode> | undefined = this.nodeRegistry;
+    if (!registry) {
+      return;
+    }
+
+    const loopRoot: AlchemicalNode | undefined = registry.get(value.id);
     if (!loopRoot) {
       return;
     }
@@ -75,7 +90,7 @@ export class AlchemicalRodImpl implements AlchemicalRod {
     value.child.forEach((child: string) => {
       const blank: AlchemicalNode = new AlchemicalNode(child, 'Blank');
       loopRoot.addChild(blank);
-      this.alchemicalFurnace?.nodeList.set(child, blank);
+      registry.set(child, blank);
     })
   }
 

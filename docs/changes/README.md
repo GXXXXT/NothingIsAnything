@@ -4,6 +4,6 @@
 
 | 变更 ID | 级别 | 标题 | 当前阶段 | 状态 |
 | --- | --- | --- | --- | --- |
-| _（暂无）_ | | | | |
+| [REQ-20260915-engine-branch-coverage](REQ-20260915-engine-branch-coverage/README.md) | L2 | 引擎逻辑分支覆盖补齐（44 条用例，可达分支 27/27） | S6 完成 | verified |
 
 > 新建变更请参考 [`../README.md`](../README.md) 中的命令。
