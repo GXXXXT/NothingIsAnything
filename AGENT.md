@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AGENT.md — NothingIsAnything / Alchemy 项目 AI 开发规范
 
 > 本文件是**所有 AI 编码代理（以及人类协作者）在本仓库工作时的强制契约**。
@@ -24,11 +25,33 @@
    非预期的非 ASCII 字符、临时 `temp`/`test123` 命名，一律不得进入提交。
 8. **诚实报告**：交付说明必须包含「变更文件清单 + 执行的验证命令 + 真实验证结果 + 未决问题」。
    没跑的验证要明说"未运行"，不得省略。
+=======
+# AGENT.md — NothingIsAnything（炼金术 / Alchemy）AI 开发规范
+
+> 本文件是本仓库**唯一的 AI 协作契约**。任何 AI Agent（含人）在本仓库开发前必须先读本文件，
+> 并严格按第 2 章的工作流分步骤推进。
+>
+> 一句话规则：**先文档、后用例、再源码；一次只推进一步，每步过门禁。**
+
+- 文档版本：v1.0
+- 适用对象：在本仓库执行开发/修改任务的 AI Agent
+- 自然语言：中文为主，技术术语保留英文（与现有代码注释风格一致）
+
+---
+
+## 0. 本文件如何被使用
+
+1. **接到需求时**：不要立刻改代码。先按第 2 章流程，在 `docs/changes/<变更ID>/` 下产出文档。
+2. **每一步结束时**：在 `docs/changes/<变更ID>/README.md` 更新阶段状态与门禁结果。
+3. **写源码之前**：必须存在 `04-test-cases.md` 中登记的用例，且对应的测试代码已写好并处于失败（RED）状态。
+4. **不确定时**：向开发者提问，而不是猜测。把问题记入 `01-requirements.md` 的「开放问题」。
+>>>>>>> 0ad8b67 (Development Specifications for AGENT System)
 
 ---
 
 ## 1. 项目概览
 
+<<<<<<< HEAD
 **NothingIsAnything** 是一个 HarmonyOS（Stage 模型）应用工程。核心资产是其中的
 **Alchemy** 库：一套**由 JSON 消息驱动的动态 UI 引擎**。
 
@@ -172,28 +195,165 @@ AlchemicalText / AlchemicalColumn / AlchemicalGrid / ...   读取 node.attr 渲�
 ## 5. 消息协议规范
 
 ### 5.1 线上报文结构（`engine/type/AlchemicalType.ets`）
+=======
+### 1.1 一句话定位
+
+**NothingIsAnything / Alchemy 是一个 HarmonyOS（ArkTS + ArkUI 声明式 V2）的「服务端驱动 UI」渲染引擎**：
+外部（服务端/本地 JSON）下发一串**炼金药剂消息**，引擎把它解析为**节点树**，并动态渲染为真实 ArkUI 组件。
+
+命名隐喻贯穿全局，读代码时请对照理解：
+
+| 隐喻名 | 实际职责 |
+| --- | --- |
+| **AlchemicalRod（炼金杖）** | 消息接收器 / 外部唯一入口，`onReceive(message: string)` |
+| **AlchemicalFurnace（炼金熔炉）** | 顶层容器组件，持有 root 节点树并负责渲染 |
+| **AlchemicalNode（炼金节点）** | 组件树上的一个节点（id / type / attr / children） |
+| **AlchemicalComponent（炼金组件）** | 递归渲染单元，按 `type` 查表分发到具体 builder |
+| **AlchemicalPotion（药剂）** | 一次变更指令（`UPDATE_COMPONENT` 或 `UPDATE_DATA`） |
+| **AlchemicalAttribute（属性）** | 节点的可观察属性对象（`@ObservedV2` + `@Trace`） |
+
+### 1.2 技术栈与运行环境
+
+| 项 | 值 |
+| --- | --- |
+| 语言 / UI 框架 | ArkTS / ArkUI 声明式开发范式 **V2**（`@ComponentV2`、`@ObservedV2`、`@Trace`、`@Local`、`@Param`、`@Require`） |
+| 运行时 | HarmonyOS，Stage 模型 |
+| SDK | `compatibleSdkVersion` / `targetSdkVersion` = `6.1.0(23)` |
+| 包管理 | ohpm（`oh-package.json5`），测试依赖 `@ohos/hypium@1.0.25`、`@ohos/hamock@1.0.0` |
+| 构建 | hvigor（`hvigor-config.json5` modelVersion `6.1.0`） |
+| 测试框架 | Hypium（`describe` / `it` / `expect`） |
+| 代码检查 | DevEco CodeLinter（规则见 `code-linter.json5`：`plugin:@performance/recommended` + `plugin:@typescript-eslint/recommended`） |
+| 工程结构 | 1 个 entry（HAP） + 1 个 Alchemy（HAR 共享库） |
+| bundleName | `com.alchemy.nothingisanything` |
+
+### 1.3 目录结构与职责边界
+
+```
+NothingIsAnything/
+├── AGENT.md                      # ← 本文件：AI 开发规范
+├── docs/                         # ← 流程产物：模板 / 每个变更的文档目录
+│   ├── README.md
+│   ├── templates/                # 5 份空白模板
+│   └── changes/                  # 每个需求的变更目录 REQ-<日期>-<slug>/
+├── AppScope/app.json5            # 应用级配置
+├── build-profile.json5           # 产品/模块/构建模式定义
+├── code-linter.json5             # CodeLinter 规则
+├── oh-package.json5              # 根依赖（hypium / hamock）
+│
+├── Alchemy/                      # ★ 引擎本体（HAR，包名 @gxxxxt/alchemy）
+│   ├── Index.ets                 # ★ HAR 唯一对外出口（见 1.6 导出契约）
+│   └── src/
+│       ├── main/ets/
+│       │   ├── interface/        # 【对外契约层】稳定 API，外部只依赖这层
+│       │   │   ├── Alchemy.ets            #   AlchemicalPotionType / ComponentDescriptor / DataDescriptor / AlchemicalPotion
+│       │   │   ├── AlchemicalRod.ets      #   AlchemicalRodOptions / AlchemicalRod / AlchemicalRodCreator
+│       │   │   └── AlchemicalFurnace.ets  #   对外暴露的 @ComponentV2 struct
+│       │   └── engine/           # 【内部实现层】外部不得直接 import
+│       │       ├── core/         #   AlchemicalRodImpl（消息分发）/ AlchemicalFurnaceImpl（渲染根）
+│       │       ├── components/   #   AlchemicalNode + 每个组件的 Attribute/Builder/Struct
+│       │       ├── common/       #   AlchemicalUtils（消息解析、属性赋值）
+│       │       ├── type/         #   MessageToInstruction（线上报文结构）
+│       │       └── datamodel/    #   AlchemicalData（数据模型，当前为空实现）
+│       ├── main/resources/rawfile/v1.0/   # ★ 协议 JSON Schema 规则（AI 生成 UI 的约束源）
+│       │   ├── common.json
+│       │   └── AlchemicalComponents/*.json
+│       ├── test/                 # 本地单元测试（LocalUnit.test.ets）
+│       └── ohosTest/             # 设备侧集成测试
+│
+└── entry/                        # 演示/宿主应用（HAP）
+    └── src/main/
+        ├── ets/pages/Index.ets   # 演示页：读 rawfile 模拟流式下发消息
+        └── resources/rawfile/alchemy_message_demo.json  # ★ 协议样例报文
+```
+
+**分层铁律**
+
+- `interface/` 是对外契约，**只能**通过 `Alchemy/Index.ets` 导出；修改签名 = 破坏性变更，必须走「协议变更清单」（5.4）。
+- `engine/` 是实现细节，**禁止**从 `entry` 或其他模块直接 import `engine/**`。
+- `entry/` 只做「宿主 + 演示」，**禁止**把引擎逻辑写进 entry。
+
+### 1.4 核心架构与数据流
+
+```
+外部消息(JSON 字符串)
+        │
+        ▼
+AlchemicalRod.onReceive(message)                     ← interface/AlchemicalRod.ets
+        │
+        ▼
+AlchemicalRodImpl.onReceive()                        ← engine/core/AlchemicalRod.ets
+        │  ① AlchemicalUtils.parseMessage()  →  AlchemicalPotion[]
+        │     报文 {version, UPDATE_COMPONENT?|UPDATE_DATA?} → 按 key 判定 type
+        ▼
+   ┌────────────────────────┬─────────────────────────┐
+   │ UPDATE_COMPONENT       │ UPDATE_DATA             │
+   │ updateComponents()     │ updateDataModel()       │
+   │  · 从 nodeList 找节点   │  · ⚠ 当前为空实现        │
+   │  · 设 type / attr       │                         │
+   │  · 新增 child 占位节点   │                         │
+   └────────────────────────┴─────────────────────────┘
+        │
+        ▼
+AlchemicalFurnaceImpl (@ComponentV2)                 ← engine/core/AlchemicalFurnace.ets
+   rootNode + nodeList: Map<string, AlchemicalNode>
+   aboutToAppear(): 注册自身到 Rod（registerAlchemicalFurnaceImpl）
+        │
+        ▼
+AlchemicalComponent 递归渲染                          ← engine/components/AlchemicalComponent.ets
+   查 componentMap 得到 builder → 调用 builder(UIUtils.makeBinding(...))
+        │
+        ▼
+具体组件 struct（AlchemicalText / Button / Column / Row / List / Grid / ...）
+   容器组件对 getChildren() 做 ForEach，递归回到 AlchemicalComponent
+```
+
+**关键机制说明**
+
+- **响应式**：`AlchemicalNode` 与 `BasicAlchemyAttribute` 都是 `@ObservedV2`，字段用 `@Trace` 标注，
+  因此 `AlchemicalRodImpl` 在普通类中直接改 `node.type` / `node.attr` 即可驱动 UI 刷新。
+- **双向桥接**：Rod 是普通类（非组件），无法直接拿 UI 状态；因此由 Furnace 在 `aboutToAppear` 时
+  把自身注册给 Rod（`registerAlchemicalFurnaceImpl`），形成「Rod 改节点 → Furnace 重渲染」链路。
+
+### 1.5 消息协议（线上契约）
+
+**报文形态**：JSON **数组**，每个元素是一条指令。
+>>>>>>> 0ad8b67 (Development Specifications for AGENT System)
 
 ```jsonc
 [
   {
+<<<<<<< HEAD
     "version": "1.0",
     "UPDATE_COMPONENT": {
       "id": "contentText",          // 必填，全局唯一，ASCII
       "componentType": "Text",      // 必填，必须是注册表中的 key
       "child": ["a", "b"],          // 可选，仅容器组件；值是他处定义的 id 列表，禁止内联子组件
       "params": { "text": "你好" }   // 组件初始化参数
+=======
+    "version": "1.0",                         // 必填
+    "UPDATE_COMPONENT": {                     // 与 UPDATE_DATA 二选一
+      "id": "contentText",                    // 节点唯一 id（root 为根）
+      "componentType": "Text",                // 必须是已注册的组件类型
+      "child": ["childA", "childB"],          // 可选；只放 id，禁止内联子组件定义
+      "params": { "text": "你好", "width": "100%" }
+>>>>>>> 0ad8b67 (Development Specifications for AGENT System)
     }
   },
   {
     "version": "1.0",
+<<<<<<< HEAD
     "UPDATE_DATA": {
       "id": "contentText",
       "value": { }                  // 语义未定，见第 15 节
     }
+=======
+    "UPDATE_DATA": { "id": "progressSlider", "value": 50 }   // ⚠ 见已知问题 #3
+>>>>>>> 0ad8b67 (Development Specifications for AGENT System)
   }
 ]
 ```
 
+<<<<<<< HEAD
 顶层是**数组**，每个元素携带 `version` 与**恰好一个** `UPDATE_*` 键。
 `AlchemicalUtils.parseMessage` 用 `Object.keys(...).find()` 取第一个匹配键，因此：
 **一条报文里不得同时出现 `UPDATE_DATA` 和 `UPDATE_COMPONENT`**（第二个会被丢弃）。
@@ -586,3 +746,510 @@ AI 代理宣布任务完成前，必须逐项确认：
 **本规范由项目现状反推制定，会随架构演进更新。**
 **修改本文件需与代码变更同一提交，并说明理由。**
 **若规范与代码冲突，视为代码存在待修缺陷，而不是规范可以忽略。**
+=======
+**类型定义位置**（改动必须同步）
+
+| 概念 | 文件 |
+| --- | --- |
+| `AlchemicalPotionType` / `ComponentDescriptor` / `DataDescriptor` / `AlchemicalPotion` | `Alchemy/src/main/ets/interface/Alchemy.ets` |
+| `MessageToInstruction`（报文结构） | `Alchemy/src/main/ets/engine/type/AlchemicalType.ets` |
+| 协议 JSON Schema 规则 | `Alchemy/src/main/resources/rawfile/v1.0/**` |
+| 样例报文 | `entry/src/main/resources/rawfile/alchemy_message_demo.json` |
+
+### 1.6 对外导出契约（`Alchemy/Index.ets`）
+
+当前**仅**导出三项，新增对外 API 必须显式在此登记：
+
+```ts
+export { AlchemicalFurnace } from './src/main/ets/interface/AlchemicalFurnace'
+export { AlchemicalRod, AlchemicalRodCreator } from './src/main/ets/interface/AlchemicalRod'
+```
+
+### 1.7 组件注册机制（★ 多处联动，最易漏）
+
+新增/修改一个组件类型 `X` 时，**必须同步以下位置**，缺一处即产生「静默失效」（不报错但渲染错乱）：
+
+| # | 位置 | 作用 | 漏改后果 |
+| --- | --- | --- | --- |
+| 1 | `AlchemicalComponent.componentMap` | `type` → Builder 函数 | 命中不到，回落到 Blank 空白 |
+| 2 | `AlchemicalComponent.componentAttributeMap` | `type` → Attribute 工厂 | 属性丢失 / 类型断言崩溃 |
+| 3 | `Alchemy/src/main/resources/rawfile/v1.0/AlchemicalComponents/AlchemicalX.json` | 协议规则（约束下发方） | 生成端缺约束，产物不可控 |
+| 4 | `docs/` 内的协议说明（如涉及对外） | 人读文档 | 契约失真 |
+
+**现有 12 种已注册组件类型**（`componentMap` / `componentAttributeMap` 各 12 项）：
+`Blank`、`Button`、`Checkbox`、`Column`、`Divider`、`Grid`、`Image`、`List`、`Row`、`Slider`、`Text`、`TextInput`。
+
+**注意**：协议规则目录 `rawfile/v1.0/AlchemicalComponents/` 下只有 **11** 个 JSON —— `Blank` 没有规则文件。
+这是「注册表 ↔ 规则」漂移的一个实例，新增组件时不要复刻这个疏漏。
+
+### 1.8 当前实现状态
+
+| 能力 | 状态 | 证据 |
+| --- | --- | --- |
+| 消息解析（JSON → Potion） | ✅ 已实现 | `AlchemicalUtils.parseMessage` |
+| `UPDATE_COMPONENT` 建树 | 🟡 部分实现 | 可创建节点、设 type/attr、挂 child 占位；**不支持属性二次更新、不支持移除节点** |
+| `UPDATE_DATA` 数据更新 | ❌ 未实现 | `AlchemicalRodImpl.updateDataModel()` 与 `AlchemicalData.updateDataModel()` 均为空方法体 |
+| 递归渲染（Column/Row/List/Grid 容器） | ✅ 已实现 | 各容器 `ForEach(getChildren())` |
+| 组件规则 JSON Schema | 🟡 部分实现 | 仅 11 个组件文件 + `common.json`；`params` 写法不规范（见 #6） |
+| 真实测试覆盖 | ✅ 逻辑层已覆盖 | 44 条 L-Unit 用例，逻辑层可达分支 27/27（见 §4.2 基线） |
+| README / 开发者文档 | ❌ 无 | 本文件即为首份规范 |
+
+### 1.9 已知问题与技术债（开发时请顺带留意，不要无声扩大）
+
+> 这些是**已确认存在**的问题。修复它们需要单独立项走完整流程，**不要**在无关需求里顺手改。
+
+| # | 问题 | 位置 | 影响 |
+| --- | --- | --- | --- |
+| 1 | `UPDATE_DATA` 全链路未实现 | `AlchemicalRod.updateDataModel` / `AlchemicalData.updateDataModel` | demo 里最后 3 条数据指令被静默丢弃 |
+| 2 | `@Trace private static` 语义可疑 | `engine/datamodel/AlchemicalData.ets` | 静态成员 + V2 状态装饰器组合需核实，可能完全无效 |
+| 3 | 协议与样例不一致 | `DataDescriptor = {id, value}` vs demo 中 `UPDATE_DATA: {id, text}` | 契约二义，先定协议再实现 |
+| 4 | 重复下发父节点指令会**重建子节点对象** | `AlchemicalRodImpl.updateComponents` 对每个 child 新建 `AlchemicalNode` 并覆盖 Map 条目 | 子节点数量不增长（Map 按 id 去重），但**子节点已有状态被丢弃**；实测见 `TC_ROD_006` |
+| 5 | ~~强非空断言 `this.alchemicalFurnace!`~~ | ~~`AlchemicalRodImpl.updateComponents`~~ | ✅ **已修复**（`REQ-20260915-engine-branch-coverage` 的 seam 改造：改为 `nodeRegistry` 空值保护，未注册时安全忽略而非崩溃） |
+| 6 | 规则 JSON 的 `child` 类型写成 `"object"` | `rawfile/v1.0/AlchemicalComponents/*.json` | 应为 `array`，Schema 失效 |
+| 7 | ForEach 缺 keyGenerator | Column / Grid / List / Row（CodeLinter 4 warn） | 列表复用性能劣化 |
+| 8 | `componentMap.get()` 可能为 `undefined` | 各容器 `AlchemicalComponent(...)` 调用处 | 未注册类型依赖默认值兜底，无显式校验 |
+| 9 | 无协议一致性自动化校验 | 全局 | 代码注册表与规则 JSON 漂移无人发现 |
+| 10 | ~~零真实测试覆盖~~ | ~~`Alchemy/src/test`、`entry/src/test`~~ | ✅ **已修复**（`REQ-20260915-engine-branch-coverage`：44 条用例，逻辑层可达分支 27/27） |
+| 11 | UI struct 层完全无测试 | 全部 `@ComponentV2` 的 `build()` / `@Builder` | 渲染回归无保护，需设备侧 ohosTest |
+| 12 | `registerAlchemicalFurnaceImpl` 无法被单元测试覆盖 | `AlchemicalRodImpl`（参数为 struct，测试无法构造） | 该 2 行委托逻辑仅由 UI 路径与 `assembleHap` 保护 |
+
+---
+
+## 2. 角色与总体工作流
+
+### 2.1 输入与输出
+
+- **工作流输入**：**开发者的需求描述**（一句话到一段话均可，允许口语化、允许不完整）。
+- **工作流输出**：一个完整的、可验证的、可追溯的变更，包含
+  1. `docs/changes/<变更ID>/` 下 5 份文档；
+  2. 先行编写的测试代码；
+  3. 通过验证的源码改动；
+  4. 一份更新后的阶段状态看板。
+
+### 2.2 七阶段流程与门禁
+
+```
+开发者需求描述
+      │
+   ┌──▼─────────────────────────────────────────────┐
+   │ S0 立项与澄清          → 门禁 G0              │  复述需求 / 消除歧义 / 建变更目录
+   └──┬─────────────────────────────────────────────┘
+   ┌──▼─────────────────────────────────────────────┐
+   │ S1 需求文档            → 门禁 G1              │  FR / NFR / 验收标准 可验证
+   └──┬─────────────────────────────────────────────┘
+   ┌──▼─────────────────────────────────────────────┐
+   │ S2 开发方案            → 门禁 G2              │  文件级改动清单 + 任务拆解
+   └──┬─────────────────────────────────────────────┘
+   ┌──▼─────────────────────────────────────────────┐
+   │ S3 测试方案            → 门禁 G3              │  分层策略 + 用例清单 + 通过标准
+   └──┬─────────────────────────────────────────────┘
+   ┌──▼─────────────────────────────────────────────┐
+   │ S4 测试用例 + 测试代码  → 门禁 G4  【RED】     │  用例已登记且测试真实失败
+   └──┬─────────────────────────────────────────────┘
+   ┌──▼─────────────────────────────────────────────┐
+   │ S5 源码实现            → 门禁 G5  【GREEN】    │  测试转绿 + CodeLinter 无新增 error
+   └──┬─────────────────────────────────────────────┘
+   ┌──▼─────────────────────────────────────────────┐
+   │ S6 回归与收尾          → 门禁 G6              │  全量回归 + 文档回填 + 提交
+   └──┬─────────────────────────────────────────────┘
+      ▼
+   可交付变更
+```
+
+### 2.3 门禁与产物矩阵
+
+| 阶段 | 产物（`docs/changes/<变更ID>/`） | 门禁判据（全部满足才可进入下一阶段） |
+| --- | --- | --- |
+| **S0** 立项与澄清 | `README.md`（状态看板） | 需求已用一句话复述；歧义点已向开发者提问并得到答复（或明确标注为假设）；变更目录已创建 |
+| **S1** 需求文档 | `01-requirements.md` | 每条 FR 可测试；每条 NFR 有量化指标；「非目标」已写明；验收标准 AC 与 FR 一一对应 |
+| **S2** 开发方案 | `02-design.md` | 有**文件级**改动清单（新增/修改/删除）；有接口签名；有异常与兼容性分析；已拆解为可独立验证的步骤 |
+| **S3** 测试方案 | `03-test-plan.md` | 明确测试层级与运行方式；用例清单覆盖全部 FR 与关键边界；写明通过标准与回归范围 |
+| **S4** 测试用例 | `04-test-cases.md` + 测试代码 | 用例编号唯一且与 AC 双向可追溯；**测试代码已写完并运行/尝试运行，处于失败状态** |
+| **S5** 源码实现 | `05-task-breakdown.md`（勾选进度）+ 源码 | 目标用例全部转绿（或按 §6.3 记录无法运行的原因）；CodeLinter 无**新增** error；无越界改动 |
+| **S6** 回归与收尾 | 全部文档回填状态 | 全量测试无回归；文档状态置为 `verified`；追踪矩阵无空行；提交信息合规 |
+
+### 2.4 分步骤推进规则（强制）
+
+1. **一次只推进一步**：一个回合只完成一个阶段（S0…S6 之一），不要跨阶段产出。
+2. **每步必须留痕**：在 `README.md` 看板更新「当前阶段 / 门禁结果 / 下一步」。
+3. **门禁不过不前进**：门禁未通过时，要么补齐本阶段产物，要么回到上一阶段修正，**禁止**「先写代码回头补文档」。
+4. **任务拆解要可独立验证**：`02-design.md` 中的每个步骤必须自带验证方式（跑哪条用例、看什么现象）。
+5. **小步提交**：每个任务步骤对应一次原子提交（见第 7 章）。
+6. **越界即停**：实现过程中若发现需要改动 `02-design.md` 未列出的文件，**先停下更新方案**，再继续。
+7. **不允许静默扩大范围**：发现 1.9 节的技术债时，记录到 `01-requirements.md` 的「衍生问题」，
+   不在本次需求内顺手修改（除非开发者明确同意纳入范围）。
+
+### 2.5 需求分级（决定流程深度）
+
+| 级别 | 判据 | 流程要求 |
+| --- | --- | --- |
+| **L1 微改** | 注释、文案、样式常量、单文件无逻辑改动 | 可跳过 S1/S2/S3，但必须：写/改测试用例、S5 后跑 CodeLinter；在 `README.md` 记录 |
+| **L2 常规** | 单模块功能增删、新增一个组件、修一个 bug | 全流程 S0–S6 |
+| **L3 重大** | 协议变更、`interface/` 签名变更、架构调整、跨模块改动 | 全流程 + 必须产出「协议变更清单」5.4 + 兼容性与迁移方案 + 开发者显式确认 G1/G2 |
+
+> 级别由 AI 判定并在 `README.md` 中声明；若判定为 L3，必须在 S1 结束前请开发者确认。
+
+---
+
+## 3. 阶段细则
+
+### S0 立项与澄清
+
+- **动作**：把需求描述翻译成「目标 + 期望行为 + 边界」，找出所有歧义点。
+- **必须提问的情形**：需求未说明默认值 / 涉及协议字段语义 / 涉及破坏性变更 / 有多种合理实现且代价差异大。
+- **禁止**：在歧义未澄清时自行假设并直接进入实现。
+- **产出**：`docs/changes/<变更ID>/README.md`，含变更 ID、级别、原始需求原文、当前阶段、状态看板。
+
+**变更 ID 规则**：`REQ-<YYYYMMDD>-<kebab-slug>`，例如 `REQ-20260915-slider-data-update`。
+
+### S1 需求文档 → `01-requirements.md`
+
+使用 `docs/templates/01-requirements.md`。必须包含：
+
+- 背景与问题、目标、**非目标（明确不做什么）**；
+- 用户故事；
+- **功能需求 FR-n**（每条必须可观测、可测试）；
+- **非功能需求 NFR-n**（性能、兼容性、可维护性，带量化指标）；
+- **验收标准 AC-n**（与 FR 对应，是测试用例的唯一来源）；
+- 衍生问题（本次不做但要记录）；
+- 开放问题（未决项 + 默认假设）。
+
+**门禁 G1**：任一条 FR 无法写出「如何验证」，则需求文档不合格。
+
+### S2 开发方案 → `02-design.md`
+
+使用 `docs/templates/02-design.md`。必须包含：
+
+- 方案概述与关键取舍（为什么这样做，备选方案为何不选）；
+- **文件级改动清单**：`新增 / 修改 / 删除`，每项一句话说明；
+- **接口签名变更**：涉及 `interface/**` 或协议时必须给出前后对比；
+- 数据结构与状态流（节点树如何变化、`@Trace` 字段如何驱动刷新）；
+- 异常与边界处理（空值、未注册类型、重复消息、乱序消息）；
+- 兼容性与回滚方案；
+- **任务拆解**：形成 `05-task-breakdown.md` 的初始步骤表。
+
+**门禁 G2**：任一步骤无法独立验证，则方案不合格。
+
+### S3 测试方案 → `03-test-plan.md`
+
+使用 `docs/templates/03-test-plan.md`。必须包含：
+
+- 测试范围（测什么 / 不测什么）；
+- **测试分层**（见 4.2）；
+- 环境与前置条件；
+- **用例清单**（编号、标题、层级、自动化落点、对应 AC）；
+- 通过标准（哪些用例必须全绿、CodeLinter 的 error 阈值）；
+- 回归范围（本次改动可能影响到的既有能力）。
+
+**门禁 G3**：用例清单未能覆盖全部 FR 与关键边界（空值/重复/乱序/未注册类型），则方案不合格。
+
+### S4 测试用例 + 测试代码（RED）
+
+使用 `docs/templates/04-test-cases.md`。**这是「测试先行」的落地点。**
+
+- 先把每条用例写成表格行：编号、前置条件、步骤、预期结果、自动化位置、状态；
+- **然后立刻写测试代码**（Hypium），覆盖本轮所有可自动化的用例；
+- 运行测试（或按 §6.3 说明为何无法运行），确认处于**失败**状态；
+- 在文档中登记实际运行结果（命令 + 输出摘要 + 退出码）。
+
+**门禁 G4**：测试代码不可运行且未说明原因 → 不通过；测试代码直接通过（未实现就绿）→ 说明用例无效，重写。
+
+### S5 源码实现（GREEN）
+
+- 严格按 `05-task-breakdown.md` 的步骤推进，一次一步；
+- 每完成一步：跑该步对应的测试 → 更新任务表状态 → 提交；
+- **最小改动原则**：只改方案里列出的文件，只解决当前用例覆盖的问题；
+- 全部用例转绿后，运行 CodeLinter 并确认**无新增 error**。
+
+**门禁 G5**：用例未全绿，或 CodeLinter 新增 error → 不通过。
+
+### S6 回归与收尾
+
+- 跑全量测试（含既有用例），确认无回归；
+- 回填所有文档状态：`draft → approved → implementing → verified → archived`；
+- 校验追踪矩阵（AC ↔ FR ↔ 用例 ↔ 代码文件）无空行；
+- 按第 7 章规范提交；
+- 若产生新的技术债，登记到 `01-requirements.md` 的「衍生问题」并同步更新本文件 1.9 节。
+
+**门禁 G6**：存在未回填的文档状态或未追踪的 AC → 不通过。
+
+---
+
+## 4. 测试先行（Test-First）强制规则
+
+### 4.1 RED → GREEN 循环（不可跳过 RED）
+
+```
+写用例文档 → 写测试代码 → 运行确认【RED】 → 写实现 → 运行确认【GREEN】 → 重构（保持 GREEN）
+                              ↑
+                    严禁跳过此步直接写实现
+```
+
+- **红线**：**任何源码文件的修改，都必须能指向至少一条已登记的用例。**
+- 若某个改动确实无法被自动化测试覆盖（如纯视觉效果），必须在 `04-test-cases.md` 中标注为
+  `manual`，写明人工验证步骤与预期现象，并在 S6 记录人工验证结论。
+
+### 4.2 测试分层
+
+| 层级 | 位置 | 测什么 | 运行方式 |
+| --- | --- | --- | --- |
+| **L-Unit 本地单元测试** | `Alchemy/src/test/`、`entry/src/test/` | 纯逻辑：消息解析、属性赋值、节点树增删、协议校验 | `tools/run-unit-tests.sh`（推荐）；原始命令见 §6.2 |
+| **L-Int 设备集成测试** | `Alchemy/src/ohosTest/`、`entry/src/ohosTest/` | 组件渲染、`onReceive` 端到端、UI 自动化（`@ohos.UiTest`） | 连接设备/模拟器运行 ohosTest |
+| **L-Schema 协议契约校验** | 建议新增（见问题 #9） | 代码注册表 ↔ 规则 JSON ↔ 样例报文 三者一致 | 建议以 L-Unit 实现 |
+
+**优先级**：优先把逻辑下沉到 L-Unit（无设备依赖、反馈快）。**默认要求：引擎逻辑必须有 L-Unit 覆盖。**
+
+**当前基线**（`REQ-20260915-engine-branch-coverage`）：逻辑层可达分支 **27/27 = 100%**，行 109/165，函数 25/50。
+未覆盖的函数全部是 UI 运行时依赖（`@Builder` / struct `build()`）与无法构造的 struct 参数。
+**新增代码不得降低该基线。**
+
+### 4.3 Hypium 约定
+
+- 测试文件命名：`<被测对象>.test.ets`；测试套件用 `describe('<模块名>')`；
+- 用例名必须**描述行为与预期**，禁止 `test1`、`assertContain` 之类无信息名；
+  正确示例：`it('parseMessage_should_return_empty_when_json_is_empty_array', 0, () => {...})`；
+- 每个用例只断言一个行为；断言要精确（`assertEqual` / `assertDeepEquals` / `assertTrue`），
+  避免只断言「不抛异常」；
+- 前置/清理放 `beforeEach` / `afterEach`，确保用例间无状态污染；
+- 新增测试套件必须在同目录 `List.test.ets` 中注册。
+
+**ArkTS 对测试代码的额外约束（已实测踩坑）**
+
+- `arkts-no-untyped-obj-literals`：**禁止把裸对象字面量当参数传递**，测试里构造 `params` 必须
+  先声明 `interface`：
+  ```ts
+  interface TextParams { text: string }        // ✅ 先声明
+  const p: TextParams = { text: 'hi' };         // ✅ 合法
+  new AlchemyTextAttribute({ text: 'hi' });     // ❌ 编译失败
+  ```
+- **struct 无法被伪造**：`AlchemicalFurnaceImpl` 这类 `@ComponentV2` struct 既不能 `new`，
+  也不能用对象字面量 + `as` 断言（`{...} as XxxImpl` 与 `{} as XxxImpl` 均编译失败）。
+  需要替身时，必须走**依赖注入 seam**（见 §5.6）。
+- 用 `{} as UIContext` 这类**类**的断言是可行的（与 struct 不同）。
+- `expect` 断言里不要写 `expect(fn).assertThrowError()` 这类不确定 API；用
+  `try/catch + expect(threw).assertTrue()` 更稳。
+
+### 4.5 覆盖率门槛（回归红线）
+
+- 每个变更的 S5 门禁必须跑 `tools/run-unit-tests.sh` 并记录覆盖率数字；
+- **新增/修改逻辑代码时，分支覆盖率不得低于变更前基线**；
+- 若存在**不可达分支**（如枚举 switch 的 `default`），必须在测试方案中给出**不可达论证**，
+  不得为了让数字好看而删除防御性代码。
+
+### 4.4 不得伪造验证结果（红线）
+
+- **未实际运行**的命令，不得写成「已验证通过」。
+- 若环境不可用，必须如实记录：`验证状态：blocked（原因：…）`，并给出可复现该验证的命令与前置条件。
+- 禁止以「看起来没问题」「逻辑上应该可以」替代运行结果。
+
+---
+
+## 5. 编码规范（本项目特有）
+
+### 5.1 命名与文件布局
+
+- 引擎内所有类型/组件统一 `Alchemical*` / `Alchemy*` 前缀，沿用现有隐喻词汇；
+- 一个组件一个文件：`AlchemicalX.ets`，内含三件套
+  1. `@ObservedV2 class AlchemyXAttribute extends BasicAlchemyAttribute`
+  2. `@Builder function xComponentBuilder(componentNode: MutableBinding<AlchemicalNode>): void`
+  3. `@ComponentV2 struct AlchemicalX`
+- 注册表（`componentMap` / `componentAttributeMap`）按 **type 字母序**维护，便于人工查重。
+
+### 5.2 ArkTS / ArkUI V2 约束
+
+- 统一使用 **V2 状态装饰器**：`@ComponentV2`、`@ObservedV2`、`@Trace`、`@Local`、`@Param`、`@Require`；
+  **禁止**混用 V1（`@Component`/`@State`/`@Observed`/`@ObjectLink`），除页面入口 `@Entry @Component` 例外。
+- 状态字段必须显式 `@Trace`，否则在普通类中修改不会触发刷新。
+- 构造函数中禁止直接调用耗时/异步逻辑；初始化放在 `aboutToAppear`。
+- 禁止在 `build()` 内做副作用（网络、IO、修改状态）。
+- 使用 `MutableBinding` + `UIUtils.makeBinding` 传递节点引用，保持现有模式。
+- 属性赋值统一走 `AlchemicalUtils.assign`（反射赋值），保证扩展字段自动生效。
+
+### 5.3 新增一个组件的完整清单
+
+- [ ] 新建 `engine/components/AlchemicalX.ets`（Attribute + Builder + Struct 三件套）
+- [ ] `componentMap` 注册 `'X' → mutableBuilder(xComponentBuilder)`
+- [ ] `componentAttributeMap` 注册 `'X' → (params) => new AlchemyXAttribute(params)`
+- [ ] 新建 `rawfile/v1.0/AlchemicalComponents/AlchemicalX.json` 协议规则（`child` 用 `array`，修正问题 #6 的写法）
+- [ ] 若是对外能力，更新 `Alchemy/Index.ets` 与文档
+- [ ] 写 L-Unit 用例：Attribute 默认值、params 覆盖、未注册类型兜底
+- [ ] 在 `entry/src/main/resources/rawfile/alchemy_message_demo.json` 增加一条可复现的样例指令
+- [ ] 跑 CodeLinter（新组件不得引入新增 error；ForEach 需带 keyGenerator）
+
+### 5.4 协议变更清单（L3 必做）
+
+任何对消息格式、`ComponentDescriptor`、`DataDescriptor`、`AlchemicalPotionType` 的改动，必须同时更新：
+
+- [ ] `interface/Alchemy.ets`（类型定义）
+- [ ] `engine/type/AlchemicalType.ets`（报文结构）
+- [ ] `engine/common/AlchemicalUtils.ets`（解析逻辑）
+- [ ] `rawfile/v1.0/**` 全部相关规则 JSON
+- [ ] `entry/.../alchemy_message_demo.json`（样例）
+- [ ] 版本号 `version` 字段策略（兼容旧版本 / 拒绝旧版本）
+- [ ] `03-test-plan.md` 中的兼容性与回归用例
+- [ ] 本文件 §1.5 协议章节
+
+### 5.5 版权头与注释
+
+- **每个 `.ets` 源文件必须保留现有 Apache-2.0 版权头**（`Copyright 2026 GXXXXT`），新增文件同样添加。
+- 注释用中文，解释「为什么」而非「做什么」；对外 API 使用 `/** */` JSDoc 风格。
+- 修改代码时不要删除既有有价值注释。
+
+### 5.6 可测试性接缝（seam）
+
+引擎里有若干「普通类直接依赖 UI struct」的耦合点（如 `AlchemicalRodImpl` 依赖
+`AlchemicalFurnaceImpl`）。由于 **struct 无法在测试中构造或伪造**（§4.3），这类代码默认不可测。
+
+**规则**：
+
+1. 需要覆盖此类逻辑时，**允许**为生产代码引入**最小的依赖注入接缝**，但必须同时满足：
+   - **行为等价**：逐场景论证等价性（UI 路径、异常路径、空值路径）；
+   - **改动最小**：只碰必要的文件与方法，不做顺带重构；
+   - **可回滚**：作为独立提交，便于 `git revert`；
+   - **在 `02-design.md` 中登记**：写清为什么非改不可、否决了哪些备选方案。
+2. 既有范例：`AlchemicalRodImpl.registerNodeRegistry(registry)` ——
+   UI 路径由 `registerAlchemicalFurnaceImpl(furnace)` 转发 `furnace.nodeList`，
+   测试路径直接注入自建 `Map`。同时消除了原 `!` 断言崩溃风险（问题 #5）。
+3. **禁止**为了让代码可测而把 UI struct 拆成无意义的空壳，或引入测试专用分支
+   （如 `if (isTest)`）—— 那是反模式，应改用注入。
+
+---
+
+## 6. 命令与验证清单
+
+### 6.1 环境前置
+
+```bash
+# ★ 关键：必须使用 DevEco Studio 自带的完整 HarmonyOS SDK。
+#   ~/Library/OpenHarmony/Sdk 缺 native 组件，会导致 "SDK component missing"。
+export DEVECO_SDK_HOME="/Applications/DevEco-Studio.app/Contents/sdk"
+# ★ 必须设置 JAVA_HOME，否则 PackageHap 报 "Unable to locate a Java Runtime"。
+export JAVA_HOME="/Applications/DevEco-Studio.app/Contents/jbr/Contents/Home"
+export PATH="$JAVA_HOME/bin:/Applications/DevEco-Studio.app/Contents/tools/node/bin:$PATH"
+
+DEVECO=/Applications/DevEco-Studio.app/Contents
+HVIGOR=$DEVECO/tools/hvigor/bin/hvigorw
+OHPM=$DEVECO/tools/ohpm/bin/ohpm
+LINTER=$DEVECO/plugins/codelinter/run/index.js
+```
+
+### 6.2 命令表
+
+> 「验证状态」为**本机实测**结果（2026-09-15）。执行前请自行复测。
+
+| 用途 | 命令 | 验证状态 |
+| --- | --- | --- |
+| 安装依赖 | `$OHPM install` | 未实测 |
+| 构建 HAP | `$HVIGOR --no-daemon assembleHap` | ✅ **实测通过**（`BUILD SUCCESSFUL`，需 §6.1 的 SDK + JAVA_HOME） |
+| 构建 HAR（Alchemy） | `$HVIGOR --no-daemon --mode module -p module=Alchemy@default assembleHar` | 未实测 |
+| **本地单元测试（L-Unit）** | `tools/run-unit-tests.sh` | ✅ **实测通过**：44/44 用例，自动产出覆盖率报告 |
+| 本地单元测试（原始命令） | `$HVIGOR --no-daemon --mode module -p module=Alchemy@default -p product=default test` | ✅ 实测通过 |
+| **覆盖率摘要** | `node tools/coverage-summary.js <模块>/.test/default/outputs/test/reports/coverageReport.json` | ✅ 实测通过 |
+| **CodeLinter 代码检查** | `node "$LINTER" -c ./code-linter.json5 -f default -e error ./Alchemy/src/main/ets` | ✅ 实测：`Errors: 0; Warns: 4`（4 条均为 ForEach 缺 keyGenerator，见问题 #7） |
+| 设备集成测试（L-Int） | 连接设备/模拟器后运行 `Alchemy/src/ohosTest` | 未实测（需设备） |
+
+**产物路径**
+
+| 产物 | 路径 |
+| --- | --- |
+| 覆盖率原始数据 | `<模块>/.test/default/outputs/test/reports/coverageReport.json` |
+| 覆盖率 HTML | `<模块>/.test/default/outputs/test/reports/index.html` |
+| 测试结果 | `<模块>/.test/default/intermediates/test/coverage_data/test_result.txt` |
+
+**CodeLinter 说明**：`-e error` 表示仅 error 级别导致非零退出；warn 不阻塞但**必须记录**。
+项目级规则见 `code-linter.json5`（`plugin:@performance/recommended` + `plugin:@typescript-eslint/recommended`）。
+
+### 6.3 环境不可用时的处理（重要）
+
+若某条验证命令在本机无法执行（缺 SDK 组件、无设备、无 JDK 等），AI **必须**：
+
+1. 停止对构建/测试结果做任何断言；
+2. 在变更文档中如实记录：
+   ```
+   验证状态：blocked
+   阻塞原因：<具体错误原文>
+   已执行：<命令原文>
+   期望验证：<该命令能证明什么>
+   待办：<解除条件与后续动作>
+   ```
+3. 继续完成**不依赖该命令**的验证（例如 CodeLinter 能跑就必须跑）；
+4. 在最终交付说明中**显式列出未能验证的项**。
+
+> 历史案例：曾因 `DEVECO_SDK_HOME` 指向 `~/Library/OpenHarmony/Sdk`（缺 `native`）导致全部构建命令失败。
+> 定位后改用 DevEco 自带 SDK 即解除。遇到环境报错的正确做法是**先排查环境**，再决定是否记录 blocked。
+
+---
+
+## 7. 提交与交付规范
+
+- **提交粒度**：一个任务步骤一次提交；测试代码与实现代码**分开提交**，以便看出 RED→GREEN 过程。
+- **提交信息**（沿用仓库现有风格）：
+  ```
+  <简短英文祈使句标题>
+
+  <可选正文：做了什么、为什么、对应变更ID REQ-xxxx>
+
+  Signed-off-by: <name> <email>
+  ```
+- **提交前检查**：
+  - [ ] 测试已运行且结果已记录
+  - [ ] CodeLinter 无新增 error
+  - [ ] `docs/changes/<变更ID>/` 文档状态已更新
+  - [ ] 未提交 `build/`、`.hvigor/`、`.idea/`、`oh_modules/`（已在 `.gitignore`）
+  - [ ] 未擅自删除既有版权头
+
+---
+
+## 8. 文档模板与目录约定
+
+```
+docs/
+├── README.md                       # docs 使用说明与工作流速查
+├── templates/
+│   ├── 01-requirements.md          # 需求文档模板
+│   ├── 02-design.md                # 开发方案模板
+│   ├── 03-test-plan.md             # 测试方案模板
+│   ├── 04-test-cases.md            # 测试用例模板（含追踪矩阵）
+│   └── 05-task-breakdown.md        # 任务拆解模板（分步骤推进）
+└── changes/
+    └── REQ-<YYYYMMDD>-<slug>/      # 每个需求一个目录，从 templates 复制
+        ├── README.md               # 状态看板（阶段/门禁/下一步）
+        ├── 01-requirements.md
+        ├── 02-design.md
+        ├── 03-test-plan.md
+        ├── 04-test-cases.md
+        └── 05-task-breakdown.md
+```
+
+**文档状态流转**：`draft → review → approved → implementing → verified → archived`
+
+---
+
+## 9. 完成定义（Definition of Done）
+
+一次变更只有**全部**满足以下条件才算完成：
+
+- [ ] 5 份文档齐备，状态均为 `verified`
+- [ ] 每条 FR 都有对应 AC，每条 AC 都有对应用例，每条用例都有对应代码或无代码的理由
+- [ ] 测试先行过程可追溯（存在 RED 阶段记录）
+- [ ] 目标用例全部通过，既有用例无回归
+- [ ] CodeLinter 无新增 error
+- [ ] 未修改方案外的文件（或已先更新方案）
+- [ ] 技术债已登记（1.9 节 / 需求文档「衍生问题」）
+- [ ] 提交信息合规，测试与实现分次提交
+- [ ] 未能验证的项已在交付说明中显式列出
+
+---
+
+## 10. 红线（绝对禁止）
+
+1. **禁止**未写测试先改源码。
+2. **禁止**虚假声称构建/测试/lint 通过。
+3. **禁止**跳过门禁跨阶段推进。
+4. **禁止**在无关需求中顺手重构、扩大改动范围。
+5. **禁止**从 `entry` 直接 import `engine/**`，禁止绕过 `Alchemy/Index.ets` 对外契约。
+6. **禁止**混用 ArkUI V1 与 V2 状态装饰器。
+7. **禁止**删除或篡改既有 Apache-2.0 版权头。
+8. **禁止**在组件注册表与规则 JSON 之间制造漂移（新增组件必须四处同步）。
+9. **禁止**在协议字段语义未确认时实现 `UPDATE_DATA` 之类有歧义的能力（先澄清，见问题 #3）。
+>>>>>>> 0ad8b67 (Development Specifications for AGENT System)
